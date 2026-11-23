@@ -1,0 +1,90 @@
+---
+title: Your first hour
+description: Two seats, one project, and one handoff from a full session to a fresh one.
+---
+
+import { Steps } from '@astrojs/starlight/components';
+
+By the end of this page you have a master seat, a working seat, a project
+supervise knows about, and one handoff you watched happen.
+
+## Two seats
+
+<Steps>
+
+1. In one terminal, start the master seat.
+
+   ```bash
+   supervise claude --seat master --master
+   ```
+
+2. In a second terminal, start a seat to work in.
+
+   ```bash
+   supervise claude --seat work
+   ```
+
+3. In a third, look at both.
+
+   ```bash
+   supervise status
+   ```
+
+</Steps>
+
+A seat is an ordinary interactive `claude`. Everything you know about Claude
+Code still applies inside it.
+
+## Tell supervise about your project
+
+Inside a seat, run the onboarding skill.
+
+```text
+/supervise init
+```
+
+With no argument it onboards the directory the seat started in. With a path
+it onboards the repository at that path:
+
+```text
+/supervise init ~/code/my-project
+```
+
+Claude reads the project's own files and writes a small routing skill for it:
+what the project is, the files a session should read first, and the command
+that checks it. It reports doctor's lines before it writes anything.
+
+## Arm the working seat
+
+Arming is always a human's call. It lets the seat clear and hand off by
+itself.
+
+```bash
+supervise arm --seat work
+```
+
+## One handoff
+
+<Steps>
+
+1. Give Claude a task in `work`.
+
+2. When the session should end, type `/handoff`. Claude writes a recap with
+   the next step in it, marks it ready, and stops.
+
+3. supervise types `/clear` for you and sends the fresh session the recap's
+   next step as its first prompt.
+
+</Steps>
+
+Watch it from any terminal:
+
+```bash
+supervise feed --follow
+```
+
+## If the successor's box stays empty
+
+The clear ended in `not rebound`: the fresh session could not be filed under
+the seat. The line says why. Most often repld is not connected in that
+project; `claude mcp list` shows it.

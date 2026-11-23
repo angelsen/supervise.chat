@@ -1,0 +1,42 @@
+---
+title: Doctor
+description: supervise doctor reads what the install needs from your machine and prints each fix.
+---
+
+```bash
+supervise doctor
+```
+
+Doctor reads what this install needs from the machine and prints one line per
+thing. It changes nothing you would miss: its one write is a fallback runtime
+directory when the machine has none.
+
+## The four states
+
+| State      | Means                                                 |
+| ---------- | ----------------------------------------------------- |
+| `present`  | found and usable                                      |
+| `absent`   | not there, and not needed for what you have set up    |
+| `degraded` | works, with a limit; the line says which and its fix  |
+| `missing`  | needed and not there; the line prints its fix         |
+
+Doctor exits 1 when any line is `missing`, so a script can gate on it.
+
+## What it checks
+
+- **git** and **claude** on `PATH`, and the Claude Code version.
+- **The `claude` a seat runs.** A seat hosts `claude` as its own child
+  process. A wrapper that forks instead of replacing itself hides the real
+  process from the seat, and doctor says so.
+- **supervise** and **repld** on `PATH`, and that repld is at or above the
+  version supervise needs.
+- **The runtime directory**, where seats keep their state and the event log.
+- **The recap writer and its `/recap` skill.** A handoff is a recap; without
+  the writer there is nothing to hand off.
+
+`supervise doctor --json` prints the same lines for a program to read.
+
+## When a line is wrong
+
+Run the fix the line prints, then run doctor again. The installer ends with
+doctor, so `./install.sh` after a pull is also a recheck.

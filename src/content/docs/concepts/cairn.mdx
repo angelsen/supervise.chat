@@ -1,0 +1,136 @@
+---
+title: The cairn
+description: The state of your work lives on disk in one directory, so a session's context can be cleared at any time.
+---
+
+A cairn is a stack of stones that marks a trail. Here it is one directory that
+holds the state of your work, outside any conversation.
+
+## The transcript is a cache
+
+> The transcript is a cache. The store is files, the bus is the kernel, the
+> invariants are hooks, and a session is a cursor.
+
+A Claude Code conversation is fast and close at hand, and it is limited and
+gets worse as it fills. So supervise treats it as a cache: useful while it
+lasts, safe to throw away. `continue` after a clear works because a cursor
+needs almost nothing to resume: a pointer to where it was, and the store.
+
+| Layer                    | Holds                                         | Survives                    |
+| ------------------------ | --------------------------------------------- | --------------------------- |
+| The transcript           | one round's working memory                    | nothing; cleared by design  |
+| The kernel (repld)       | tasks in flight, receipts, who is working     | a clear                     |
+| The cairn                | routing skills, playbooks, recaps, notes      | everything                  |
+| The project's repository | the code, its `TODO`, its docs, git           | everything                  |
+| Hooks                    | the rules a session never has to remember     | independent of any session  |
+
+That only works if nothing important lives in the conversation alone. So every
+kind of state has a place, and a session writes it there before it ends:
+
+| What                                   | Where it lives                    | Read by                         |
+| -------------------------------------- | --------------------------------- | ------------------------------- |
+| Where this seat's work stands          | its recap, with a `next` step     | the seat's successor, at start  |
+| What a project is and how to check it  | its routing skill, in the cairn   | any seat that takes on its work |
+| What a session must know first         | the project's read-first files    | the seat, when the skill loads  |
+| What is not done yet                   | the project's `TODO`              | whoever picks the next task     |
+| What every seat did                    | the event log                     | the master, and you             |
+| Why the code changed                   | the commits                       | anyone, later                   |
+
+A clear then loses nothing. The fresh session starts small, reads the recap
+and the read-first files, and carries on.
+
+### Where the idea comes from
+
+The phrasing "the transcript is a cache" is ours; others have described the
+context window as a cache too, among them the
+[Stratum](https://arxiv.org/abs/2610.36153) paper (Sehgal, Panahandeh and
+Ezzati-Jivan, 2026): "The context window is a cache; the field is making it
+larger and cheaper, but the harder problem is what it should contain."
+
+The practice has a name, context engineering, and the technique is what
+Anthropic calls structured note-taking:
+
+- Anthropic, [Effective context engineering for AI agents](https://www.anthropic.com/research/effective-context-engineering-for-ai-agents)
+  (2025): "Structured note-taking, or agentic memory, is a technique where the
+  agent regularly writes notes persisted to memory outside of the context
+  window."
+- Anthropic's [memory tool documentation](https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool),
+  in the instruction the API adds to the system prompt: "Your context window
+  might be reset at any moment, so you risk losing any progress that is not
+  recorded in your memory directory."
+- Manus, [Context Engineering for AI Agents](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus)
+  (2025), on using the file system "not just as storage, but as structured,
+  externalized memory."
+- Chroma, [Context Rot](https://www.trychroma.com/research/context-rot)
+  (2025), on why a long context degrades: models' "performance grows
+  increasingly unreliable as input length grows."
+- The memory-and-disk picture goes back to
+  [MemGPT](https://arxiv.org/abs/2310.08560) (2023), which borrows the
+  hierarchical memory of operating systems, and Andrej Karpathy's
+  ["LLM OS" sketch](https://x.com/karpathy/status/1723140519554105733)
+  (2023), whose diagram labels the context window as RAM and the file system
+  as disk.
+
+```text
+~/cairn/
+├── CLAUDE.md
+└── .claude/skills/
+    ├── atlas/SKILL.md      # project: ~/code/atlas
+    └── billing/SKILL.md    # project: ~/work/billing
+```
+
+## Why seats start there, and not in the repository
+
+- **One master, several repositories.** The master seat sits in the cairn and
+  hands work to seats for every project the cairn knows.
+- **Your notes stay yours.** Recaps, playbooks and working notes live in the
+  cairn. The repositories you work on get no supervise files in them.
+- **Trust once.** Claude Code asks whether it trusts a directory the first
+  time it starts there. Seats start in the cairn, so you answer once, not once
+  per repository.
+
+## A project is data
+
+Each project is one routing skill: a short file whose header says where the
+repository is, which command checks it, and which files a session must read
+before it starts.
+
+```yaml
+---
+name: atlas
+description: The atlas web app and its API.
+path: ~/code/atlas
+check: ['pnpm', 'test']
+docs: ['~/code/atlas/CLAUDE.md', '~/code/atlas/docs/architecture.md']
+---
+```
+
+The master hands a seat a task with the project's name in front, and the seat
+loads the skill before it does anything else:
+
+```text
+/atlas fix the session refresh
+```
+
+## Why `/supervise init`, and not the plain command
+
+`supervise project init NAME PATH` can only fill in a template: it detects a
+check command and writes the path.
+
+Inside a seat, `/supervise init <path>` has Claude do the part a program
+cannot. It reads the project's own `CLAUDE.md`, README, CI config and build
+files, then writes the routing skill from what it found:
+
+- a description that says what the project is,
+- the read-first list, with only files that exist,
+- the check that CI actually runs.
+
+It reports `supervise doctor`'s lines before it writes anything, and leaves
+arming to you.
+
+```text
+/supervise init ~/code/atlas
+```
+
+With no path it onboards the directory the seat started in, and scaffolds a
+cairn there if there is none yet.

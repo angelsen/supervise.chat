@@ -1,0 +1,238 @@
+/* Starlight's variables mapped onto the M3 roles of m3.css. The roles flip with the theme, so one block serves both. */
+:root,
+:root[data-theme='light'],
+::backdrop {
+	--sl-color-white: var(--md-sys-color-on-surface);
+	--sl-color-gray-1: var(--md-sys-color-on-surface);
+	--sl-color-gray-2: var(--md-sys-color-on-surface-variant);
+	--sl-color-gray-3: var(--md-sys-color-on-surface-variant);
+	--sl-color-gray-4: var(--md-sys-color-outline);
+	--sl-color-gray-5: var(--md-sys-color-outline-variant);
+	--sl-color-gray-6: var(--md-sys-color-surface-container);
+	--sl-color-gray-7: var(--md-sys-color-surface-container-low);
+	--sl-color-black: var(--md-sys-color-surface);
+
+	--sl-color-accent-low: var(--md-sys-color-primary-container);
+	--sl-color-accent: var(--md-sys-color-primary);
+	--sl-color-accent-high: var(--md-sys-color-on-primary-container);
+
+	--sl-color-text: var(--md-sys-color-on-surface);
+	--sl-color-text-accent: var(--md-sys-color-primary);
+	--sl-color-text-invert: var(--md-sys-color-on-secondary-container);
+	--sl-color-bg: var(--md-sys-color-surface);
+	--sl-color-bg-nav: var(--md-sys-color-surface-container);
+	--sl-color-bg-sidebar: var(--md-sys-color-surface-container-low);
+	--sl-color-bg-inline-code: var(--md-sys-color-surface-container-highest);
+	--sl-color-bg-accent: var(--md-sys-color-secondary-container);
+	--sl-color-hairline-light: var(--md-sys-color-outline-variant);
+	--sl-color-hairline: var(--md-sys-color-outline-variant);
+	--sl-color-hairline-shade: var(--md-sys-color-surface-container-lowest);
+
+	/* Asides: note and tip sit on container roles; caution and danger keep Starlight's hues. */
+	--sl-color-blue-low: var(--md-sys-color-tertiary-container);
+	--sl-color-blue: var(--md-sys-color-tertiary);
+	--sl-color-blue-high: var(--md-sys-color-on-tertiary-container);
+	--sl-color-purple-low: var(--md-sys-color-secondary-container);
+	--sl-color-purple: var(--md-sys-color-secondary);
+	--sl-color-purple-high: var(--md-sys-color-on-secondary-container);
+
+	--sl-font: 'Roboto Flex Variable';
+	--sl-font-mono: 'Roboto Mono Variable';
+
+	--sl-text-body: var(--md-sys-typescale-body-large-size);
+	--sl-line-height: 1.5;
+	--sl-text-h1: var(--md-sys-typescale-headline-large-size);
+	--sl-text-h2: var(--md-sys-typescale-headline-small-size);
+	--sl-text-h3: var(--md-sys-typescale-title-large-size);
+	--sl-text-h4: var(--md-sys-typescale-title-medium-size);
+	--sl-line-height-headings: 1.25;
+
+	/* M3 gives elevation as a dp level; the shadow that draws a level is the implementation's. */
+	--elevation-1: 0 1px 2px rgb(0 0 0 / 0.3), 0 1px 3px 1px rgb(0 0 0 / 0.15);
+	--elevation-2: 0 1px 2px rgb(0 0 0 / 0.3), 0 2px 6px 2px rgb(0 0 0 / 0.15);
+	--elevation-3: 0 1px 3px rgb(0 0 0 / 0.3), 0 4px 8px 3px rgb(0 0 0 / 0.15);
+
+	--state-hover: calc(var(--md-sys-state-hover-state-layer-opacity) * 100%);
+	--state-focus: calc(var(--md-sys-state-focus-state-layer-opacity) * 100%);
+	--state-pressed: calc(var(--md-sys-state-pressed-state-layer-opacity) * 100%);
+}
+
+/* Focus indicator: one ring everywhere, from md.sys.state.focus-indicator. */
+:focus-visible {
+	outline: var(--md-sys-state-focus-indicator-thickness) solid var(--md-sys-color-secondary);
+	outline-offset: var(--md-sys-state-focus-indicator-outer-offset);
+}
+
+.sl-markdown-content :is(h1, h2, h3, h4),
+.content-panel h1#_top:not(.landing *) {
+	font-weight: 400;
+	color: var(--md-sys-color-on-surface);
+}
+
+/* Navigation drawer items: full-round, 56dp tall is the spec's; 40 keeps a docs tree dense. */
+.sidebar-content a {
+	border-radius: var(--md-sys-shape-corner-full);
+	padding-block: 0.5rem;
+	padding-inline: var(--md-sys-space200);
+	transition: background-color var(--md-sys-motion-spring-fast-effects-duration)
+		var(--md-sys-motion-spring-fast-effects);
+}
+.sidebar-content a:hover {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+}
+.sidebar-content a:active {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-pressed), transparent);
+}
+.sidebar-content a[aria-current='page'],
+.sidebar-content a[aria-current='page']:hover {
+	background-color: var(--md-sys-color-secondary-container);
+	color: var(--md-sys-color-on-secondary-container);
+	font-weight: 600;
+}
+
+/* Text links in prose and the table of contents get a hover state layer, not a colour change. */
+.sl-markdown-content a:not(.sl-link-button, .sl-anchor-link),
+starlight-toc a {
+	border-radius: var(--md-sys-shape-corner-extra-small);
+	transition: background-color var(--md-sys-motion-spring-fast-effects-duration)
+		var(--md-sys-motion-spring-fast-effects);
+}
+.sl-markdown-content a:not(.sl-link-button, .sl-anchor-link):hover,
+starlight-toc a:hover {
+	background-color: color-mix(in srgb, currentColor var(--state-hover), transparent);
+}
+
+/* Cards: the filled card, one tone above the page, no outline. */
+.sl-markdown-content .card {
+	background: var(--md-sys-color-surface-container-highest);
+	border: 0;
+	border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.starlight-aside {
+	border: 0;
+	border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.expressive-code .frame {
+	--ec-brdRad: var(--md-sys-shape-corner-medium);
+}
+
+.sl-markdown-content table {
+	font-size: var(--md-sys-typescale-body-medium-size);
+}
+
+/* Pagination: outlined cards with a state layer. */
+.pagination-links a {
+	border-color: var(--md-sys-color-outline-variant);
+	border-radius: var(--md-sys-shape-corner-medium);
+	box-shadow: none;
+	transition: background-color var(--md-sys-motion-spring-fast-effects-duration)
+		var(--md-sys-motion-spring-fast-effects);
+}
+.pagination-links a:hover {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+	border-color: var(--md-sys-color-outline-variant);
+}
+
+/* Tabs: primary tabs, the active one carries the indicator and the primary colour. */
+starlight-tabs [role='tab'] {
+	font-size: var(--md-sys-typescale-title-small-size);
+	font-weight: var(--md-sys-typescale-title-small-weight);
+}
+starlight-tabs [role='tab']:hover {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+}
+
+/* Buttons (md.comp.button, small): 40dp, full round, 24dp side space, label-large; press tightens to 8dp. */
+.sl-link-button,
+.m3-button {
+	align-items: center;
+	border: 0;
+	border-radius: var(--md-sys-shape-corner-full);
+	display: inline-flex;
+	gap: var(--md-sys-space100);
+	min-height: 2.5rem;
+	padding: 0 var(--md-sys-space300);
+	position: relative;
+	font-size: var(--md-sys-typescale-label-large-size);
+	font-weight: var(--md-sys-typescale-label-large-weight);
+	letter-spacing: var(--md-sys-typescale-label-large-tracking);
+	line-height: var(--md-sys-typescale-label-large-line-height);
+	text-decoration: none;
+	transition:
+		border-radius var(--md-sys-motion-spring-fast-spatial-duration)
+			var(--md-sys-motion-spring-fast-spatial),
+		box-shadow var(--md-sys-motion-spring-fast-effects-duration)
+			var(--md-sys-motion-spring-fast-effects);
+}
+.sl-link-button::before,
+.m3-button::before {
+	background: currentColor;
+	border-radius: inherit;
+	content: '';
+	inset: 0;
+	opacity: 0;
+	pointer-events: none;
+	position: absolute;
+	transition: opacity var(--md-sys-motion-spring-fast-effects-duration)
+		var(--md-sys-motion-spring-fast-effects);
+}
+.sl-link-button:hover::before,
+.m3-button:hover::before {
+	opacity: var(--md-sys-state-hover-state-layer-opacity);
+}
+.sl-link-button:focus-visible::before,
+.m3-button:focus-visible::before {
+	opacity: var(--md-sys-state-focus-state-layer-opacity);
+}
+.sl-link-button:active::before,
+.m3-button:active::before {
+	opacity: var(--md-sys-state-pressed-state-layer-opacity);
+}
+.sl-link-button:active,
+.m3-button:active {
+	border-radius: var(--md-sys-shape-corner-small);
+}
+.sl-link-button.primary,
+.m3-button.filled {
+	background: var(--md-sys-color-primary);
+	color: var(--md-sys-color-on-primary);
+}
+.sl-link-button.primary:hover,
+.m3-button.filled:hover {
+	box-shadow: var(--elevation-1);
+	color: var(--md-sys-color-on-primary);
+}
+.sl-link-button.secondary,
+.m3-button.tonal {
+	background: var(--md-sys-color-secondary-container);
+	color: var(--md-sys-color-on-secondary-container);
+}
+.sl-link-button.minimal,
+.m3-button.text {
+	background: none;
+	color: var(--md-sys-color-primary);
+	padding-inline: var(--md-sys-space150);
+}
+
+/* md.comp.button.medium: 56dp, title-medium label, press tightens to 12dp. */
+.m3-button.medium {
+	min-height: 3.5rem;
+	font-size: var(--md-sys-typescale-title-medium-size);
+	font-weight: var(--md-sys-typescale-title-medium-weight);
+	letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+}
+.m3-button.medium:active {
+	border-radius: var(--md-sys-shape-corner-medium);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

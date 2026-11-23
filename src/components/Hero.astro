@@ -1,0 +1,151 @@
+---
+import SessionDemo from './SessionDemo.astro';
+
+const { data } = Astro.locals.starlightRoute.entry;
+const { title = data.title, tagline, actions = [] } = data.hero || {};
+---
+
+<div class="landing">
+	<div class="shapes" aria-hidden="true">
+		<span class="shape a"></span>
+		<span class="shape b"></span>
+		<span class="shape c"></span>
+	</div>
+	<div class="copy">
+		{/* Starlight's skip link and table of contents target `_top`. */}
+		<h1 id="_top" data-page-title set:html={title} />
+		{tagline && <p class="tagline" set:html={tagline} />}
+		<div class="actions">
+			{
+				actions.map(({ link, text, variant }, i) => (
+					<a class:list={['m3-button', 'medium', i === 0 ? 'filled' : variant === 'minimal' ? 'text' : 'tonal']} href={link}>
+						{text}
+					</a>
+				))
+			}
+		</div>
+	</div>
+	<div class="demo">
+		<SessionDemo />
+	</div>
+</div>
+
+<style>
+	.landing {
+		align-items: center;
+		display: grid;
+		gap: var(--md-sys-space600);
+		isolation: isolate;
+		padding-block: var(--md-sys-space600);
+		position: relative;
+	}
+	.landing h1 {
+		color: var(--md-sys-color-on-surface);
+		font-size: clamp(
+			var(--md-sys-typescale-display-small-size),
+			9vw,
+			calc(var(--md-sys-typescale-display-large-size) * 1.5)
+		);
+		font-stretch: 115%;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		line-height: 1;
+	}
+	.tagline {
+		color: var(--md-sys-color-on-surface-variant);
+		font-size: var(--md-sys-typescale-headline-small-size);
+		line-height: var(--md-sys-typescale-headline-small-line-height);
+		margin-top: var(--md-sys-space300);
+		max-width: 40ch;
+	}
+	.actions {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--md-sys-space150);
+		margin-top: var(--md-sys-space400);
+	}
+	/* The magnet: near the demo, a scroll settles with it centred under the top bar. */
+	:global(html:has(.landing)) {
+		scroll-padding-top: var(--sl-nav-height);
+		scroll-snap-type: y proximity;
+	}
+	/* Two rests: the top, with the title and the buttons in view, and the demo. */
+	/* The margin covers the page's own padding above the hero, so this rest is scroll position 0, not 24px in. */
+	.landing {
+		scroll-margin-top: var(--md-sys-space600);
+		scroll-snap-align: start;
+	}
+	.demo {
+		scroll-snap-align: center;
+	}
+	/* It grows to full size as it reaches the centre of the window and eases back as it leaves. */
+	@media (prefers-reduced-motion: no-preference) {
+		@supports (animation-timeline: view()) {
+			.demo {
+				animation: lock linear both;
+				animation-timeline: view();
+			}
+			@keyframes lock {
+				0%,
+				100% {
+					opacity: 0.85;
+					transform: scale(0.96);
+				}
+				38%,
+				62% {
+					opacity: 1;
+					transform: scale(1);
+				}
+			}
+		}
+	}
+
+	/* Decorative container-colour shapes behind the hero; the corners breathe between two scale steps. */
+	.shapes {
+		inset: -4rem -2rem;
+		overflow: hidden;
+		pointer-events: none;
+		position: absolute;
+		z-index: -1;
+	}
+	.shape {
+		animation: drift 18s var(--md-sys-motion-easing-standard) infinite alternate;
+		opacity: 0.55;
+		position: absolute;
+	}
+	.shape.a {
+		background: var(--md-sys-color-primary-container);
+		border-radius: 38% 62% 55% 45% / 48% 40% 60% 52%;
+		height: 22rem;
+		inset-block-start: 0;
+		inset-inline-end: 4%;
+		width: 22rem;
+	}
+	.shape.b {
+		animation-delay: -6s;
+		background: var(--md-sys-color-tertiary-container);
+		border-radius: var(--md-sys-shape-corner-extra-extra-large);
+		height: 12rem;
+		inset-block-end: 6%;
+		inset-inline-end: 34%;
+		width: 12rem;
+	}
+	.shape.c {
+		animation-delay: -11s;
+		background: var(--md-sys-color-secondary-container);
+		border-radius: var(--md-sys-shape-corner-full);
+		height: 9rem;
+		inset-block-start: 14%;
+		inset-inline-start: -3rem;
+		width: 16rem;
+	}
+	@keyframes drift {
+		from {
+			transform: rotate(-8deg) scale(1);
+		}
+		to {
+			transform: rotate(14deg) scale(1.08);
+		}
+	}
+</style>

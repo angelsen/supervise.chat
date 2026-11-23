@@ -1,0 +1,42 @@
+---
+title: How it works
+description: A seat host, a set of Claude Code hooks, and a repld kernel that carries the messages.
+---
+
+supervise is three parts.
+
+## The seat host
+
+`supervise claude` starts `claude` as its own child in a pseudo-terminal and
+passes your keys and its screen straight through. Because it owns the
+terminal, it can see whether the input box is empty and type `/clear` into it
+at the right moment. It needs no tmux.
+
+## The plugin
+
+A Claude Code plugin registers hooks on the events a session already has:
+start, stop, a prompt submitted, a batch of tools finished. The hooks keep the
+roster of who is working on what, say when a session's context is filling up,
+and start the handoff when a turn ends on a ready recap.
+
+## The repld kernel
+
+[repld](https://github.com/angelsen/repld) is a persistent Python kernel that
+Claude Code reaches over MCP. supervise uses it for the one thing hooks cannot
+do: reach a session that is idle. A message to the master, a finished
+background task and a successor's first prompt all arrive as pushes through
+the kernel, so nothing polls.
+
+One kernel serves every seat of a project, which is also why the seats can see
+each other.
+
+## A handoff, end to end
+
+1. The session writes a recap and marks it `handoff: ready`.
+2. Its turn ends. The stop hook sees the ready recap on an armed seat.
+3. The seat host waits for an idle, empty input box and types `/clear`.
+4. The fresh session starts. The kernel files it under the same seat.
+5. The recap's `next` is sent as the fresh session's first prompt.
+
+If step 4 fails, the clear ends in `not rebound` and nothing is sent, so a
+session never starts on work it was not handed.

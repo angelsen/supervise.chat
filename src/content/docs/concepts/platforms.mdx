@@ -1,0 +1,36 @@
+---
+title: macOS and Linux
+description: Where supervise is developed, where it is being ported, and how to tell on your machine.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+| Platform | State                                             |
+| -------- | ------------------------------------------------- |
+| Linux    | where supervise is developed and run every day    |
+| macOS    | being ported; measured on Apple silicon           |
+| Windows  | not tried                                         |
+
+<Aside type="caution">
+	The macOS port is in progress. Treat this page as a direction, and
+	`supervise doctor` on your own machine as the answer.
+</Aside>
+
+## What differs on a Mac
+
+- **Process facts.** Linux answers "which process is this, and who started
+  it" from `/proc`. macOS has no `/proc`, so the seat host reads the same
+  facts another way.
+- **Memory.** The check that keeps a heavy job from starting on a full machine
+  reads available memory differently on each system.
+- **The seat-view key.** The default key that opens the seat view is
+  `Ctrl+\`. Some Mac terminal and keyboard-layout combinations send a
+  different byte for that chord, so the installer offers to capture a key of
+  your choice: `supervise prefix --capture`.
+- **The runtime directory.** Linux has `/run/user/<uid>`. On a Mac, doctor
+  sets up a directory under the system temp directory and names it.
+
+## What is the same
+
+The seats, the plugin, the recap and the handoff are the same code on both.
+repld runs on both.

@@ -1,0 +1,75 @@
+---
+title: supervise
+description: Run several Claude Code sessions side by side and keep them going.
+template: splash
+hero:
+  tagline: Run several Claude Code sessions side by side and keep them going.
+  actions:
+    - text: Install
+      link: /start/install/
+      icon: right-arrow
+    - text: How it works
+      link: /concepts/how-it-works/
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkButton } from '@astrojs/starlight/components';
+import SeatView from '../../components/SeatView.astro';
+
+## Every seat keeps itself going
+
+A Claude Code session fills its context and slows down. A seat writes a recap
+before that happens, clears, and its successor starts on the recap's next
+step. Workers do it, and so does the master that routes their work, so nothing
+waits on one long conversation.
+
+<CardGrid>
+	<Card title="Seats" icon="laptop">
+		Each Claude Code session is a seat with a name, in any terminal. No tmux
+		needed.
+	</Card>
+	<Card title="A master" icon="star">
+		One seat routes work to the others, and they report back to it.
+	</Card>
+	<Card title="Handoff" icon="random">
+		A recap, a clear, and a fresh session that continues from the recap.
+	</Card>
+	<Card title="Doctor" icon="approve-check">
+		`supervise doctor` reads what the install needs from your machine and
+		prints the fix for each thing that is missing.
+	</Card>
+</CardGrid>
+
+## One key away
+
+Press `Ctrl+\` inside any seat and the seat view opens over Claude: this
+seat's state, who its master is, every other seat, and the work in flight.
+Arm, clear, message another seat or leave, each with one key. `q` returns to
+Claude where you left it.
+
+<SeatView />
+
+## The state lives in a cairn, not in the conversation
+
+A conversation is working memory: fast, limited, and safe to throw away once
+nothing important lives only there. The cairn is one directory that holds the
+rest on disk: each seat's recap, each project's routing skill and the files to
+read first, the open work, and the log of what every seat did. That is why a
+clear loses nothing.
+
+Onboarding a repository is one line inside a seat, and Claude writes the
+project's routing skill from its own docs.
+
+```text
+/supervise init ~/code/atlas
+```
+
+<LinkButton href="/concepts/cairn/" variant="secondary">
+	Why a cairn
+</LinkButton>
+
+## Access
+
+supervise is invite-only for now. If you were given access, start with
+[Install](/start/install/). [repld](https://github.com/angelsen/repld), the
+kernel it runs on, is public.

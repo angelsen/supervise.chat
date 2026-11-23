@@ -1,0 +1,127 @@
+---
+// Frames come from scripts/seatview-gen.py, which calls supervise's own renderer on a made-up project.
+import view from '../generated/seatview.json';
+---
+
+<div class="seatview not-content">
+	<div class="steps" role="tablist" aria-label="Steps of a handoff">
+		{
+			view.frames.map((f, i) => (
+				<button role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-frame={i}>
+					{f.label}
+				</button>
+			))
+		}
+	</div>
+	<div class="screen" style={`--cols:${view.width}`}>
+		{
+			view.frames.map((f, i) => (
+				<pre hidden={i !== 0} data-frame={i} set:html={f.lines.join('\n')} />
+			))
+		}
+	</div>
+</div>
+
+<script>
+	for (const root of document.querySelectorAll<HTMLElement>('.seatview')) {
+		const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+		const frames = [...root.querySelectorAll<HTMLElement>('pre')];
+		let at = 0;
+		let timer = 0;
+		const show = (n: number) => {
+			at = n;
+			tabs.forEach((t, i) => t.setAttribute('aria-selected', String(i === n)));
+			frames.forEach((f, i) => (f.hidden = i !== n));
+		};
+		const play = () => {
+			timer = window.setInterval(() => show((at + 1) % frames.length), 2600);
+		};
+		// A reader who picks a step keeps it: the loop does not resume under them.
+		tabs.forEach((t, i) =>
+			t.addEventListener('click', () => {
+				clearInterval(timer);
+				show(i);
+			}),
+		);
+		if (!matchMedia('(prefers-reduced-motion: reduce)').matches) play();
+	}
+</script>
+
+<style>
+	.seatview {
+		margin-block: var(--md-sys-space300);
+	}
+	.steps {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--md-sys-space100);
+		margin-bottom: var(--md-sys-space150);
+	}
+	/* md.comp.filter-chip's shape: 32dp, 8dp corners, label-large. */
+	.steps button {
+		background: none;
+		border: 1px solid var(--md-sys-color-outline-variant);
+		border-radius: var(--md-sys-shape-corner-small);
+		color: var(--md-sys-color-on-surface-variant);
+		cursor: pointer;
+		font: inherit;
+		font-size: var(--md-sys-typescale-label-large-size);
+		font-weight: var(--md-sys-typescale-label-large-weight);
+		height: 2rem;
+		padding: 0 var(--md-sys-space200);
+		transition: background-color var(--md-sys-motion-spring-fast-effects-duration)
+			var(--md-sys-motion-spring-fast-effects);
+	}
+	.steps button:hover {
+		background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+	}
+	.steps button[aria-selected='true'] {
+		background: var(--md-sys-color-secondary-container);
+		border-color: transparent;
+		color: var(--md-sys-color-on-secondary-container);
+	}
+	.screen {
+		background: var(--md-sys-color-surface-container-lowest);
+		border: 1px solid var(--md-sys-color-outline-variant);
+		border-radius: var(--md-sys-shape-corner-large);
+		box-shadow: var(--elevation-2);
+		container-type: inline-size;
+		overflow: hidden;
+		padding: var(--md-sys-space200);
+	}
+	/* The font scales with the card so all --cols columns fit; 0.6 is the mono face's advance per em. */
+	pre {
+		color: var(--md-sys-color-on-surface);
+		font-family: var(--__sl-font-mono);
+		font-size: min(0.875rem, calc(100cqi / (var(--cols) * 0.6)));
+		line-height: 1.35;
+		margin: 0;
+		white-space: pre;
+	}
+	pre :global(.ok) {
+		color: var(--md-sys-color-primary);
+	}
+	pre :global(.warn) {
+		color: var(--md-sys-color-tertiary);
+	}
+	pre :global(.bad) {
+		color: var(--md-sys-color-error);
+	}
+	pre :global(.info) {
+		color: var(--md-sys-color-secondary);
+	}
+	pre :global(.dim) {
+		color: var(--md-sys-color-on-surface-variant);
+	}
+	pre :global(.faint) {
+		color: var(--md-sys-color-outline);
+	}
+	pre :global(.b) {
+		font-weight: 700;
+	}
+	pre :global(.rev) {
+		background: var(--md-sys-color-inverse-surface);
+		border-radius: var(--md-sys-shape-corner-extra-small);
+		color: var(--md-sys-color-inverse-on-surface);
+	}
+</style>

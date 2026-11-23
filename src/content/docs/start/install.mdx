@@ -1,0 +1,75 @@
+---
+title: Install
+description: What supervise needs, and the one script that installs it.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+<Aside>
+	supervise is invite-only for now. You need the clone URL or a zip of the
+	repository from whoever invited you.
+</Aside>
+
+## What you need first
+
+- **Claude Code**: `claude`, run once and logged in.
+- **uv**, with its tool bin directory on `PATH` (`uv tool update-shell`).
+- **git**.
+
+Everything else the installer supplies, [repld](https://github.com/angelsen/repld)
+included.
+
+## Install
+
+<Steps>
+
+1. Clone the repository you were given, or unpack the zip, and enter it.
+
+   ```bash
+   git clone <the URL you were given> supervise && cd supervise
+   ```
+
+2. Run the installer. It reads its own directory, so it is never piped from a
+   URL.
+
+   ```bash
+   ./install.sh
+   ```
+
+   It installs repld when it is missing, installs `supervise` into uv's tool
+   bin, adds the Claude Code plugin, and ends by running `supervise doctor`.
+
+3. Read doctor's lines. Each `missing` or `degraded` line prints its own fix.
+   [Doctor](/start/doctor/) explains each state.
+
+4. Check that Claude Code sees repld and the plugin in the project you will
+   work in.
+
+   ```bash
+   claude mcp list       # repld must say Connected
+   claude plugin list    # supervise@supervise
+   ```
+
+   If repld is not listed:
+
+   ```bash
+   claude mcp add --scope local repld -- repld bridge
+   ```
+
+</Steps>
+
+To upgrade, pull and run `./install.sh` again.
+
+## Next
+
+[Your first hour](/start/first-hour/): a seat, a project, and one handoff.
+
+## Uninstall
+
+The plugin goes first, so that no hook calls a `supervise` that is gone.
+
+```bash
+claude plugin uninstall supervise@supervise
+claude plugin marketplace remove supervise
+uv tool uninstall supervise
+```
