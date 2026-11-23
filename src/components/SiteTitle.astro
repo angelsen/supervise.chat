@@ -1,0 +1,33 @@
+---
+import CairnMark from './CairnMark.astro';
+
+const { siteTitle, siteTitleHref } = Astro.locals.starlightRoute;
+---
+
+<a href={siteTitleHref} class="site-title sl-flex">
+	<CairnMark />
+	<span translate="no">{siteTitle}</span>
+</a>
+
+<style>
+	.site-title {
+		align-items: center;
+		/* md.comp.app-bar.title.color; the mark keeps the brand colour. */
+		color: var(--md-sys-color-on-surface);
+		font-family: var(--font-brand);
+		font-size: var(--md-sys-typescale-title-large-size);
+		font-weight: var(--md-sys-typescale-title-large-weight);
+		gap: var(--md-sys-space100);
+		letter-spacing: var(--md-sys-typescale-title-large-tracking);
+		line-height: var(--md-sys-typescale-title-large-line-height);
+		min-width: 0;
+		text-decoration: none;
+		white-space: nowrap;
+	}
+	.site-title :global(.cairn) {
+		color: var(--md-sys-color-primary);
+		flex-shrink: 0;
+		height: 2.25rem;
+		width: 2.25rem;
+	}
+</style>

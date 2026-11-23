@@ -14,7 +14,15 @@ const { title = data.title, tagline, actions = [] } = data.hero || {};
 	<div class="copy">
 		{/* Starlight's skip link and table of contents target `_top`. */}
 		<h1 id="_top" data-page-title set:html={title} />
-		{tagline && <p class="tagline" set:html={tagline} />}
+		{
+			tagline && (
+				<p class="tagline">
+					{tagline.split(' ').map((word, i) => (
+						<span style={`--i:${i}`}>{word} </span>
+					))}
+				</p>
+			)
+		}
 		<div class="actions">
 			{
 				actions.map(({ link, text, variant }, i) => (
@@ -46,17 +54,31 @@ const { title = data.title, tagline, actions = [] } = data.hero || {};
 			9vw,
 			calc(var(--md-sys-typescale-display-large-size) * 1.5)
 		);
-		font-stretch: 115%;
-		font-weight: 600;
-		letter-spacing: -0.02em;
+		font-family: var(--font-brand);
+		font-weight: 500;
+		letter-spacing: -0.03em;
 		line-height: 1;
 	}
 	.tagline {
 		color: var(--md-sys-color-on-surface-variant);
+		font-family: var(--font-brand);
 		font-size: var(--md-sys-typescale-headline-small-size);
 		line-height: var(--md-sys-typescale-headline-small-line-height);
 		margin-top: var(--md-sys-space300);
 		max-width: 40ch;
+	}
+	/* The tagline arrives the way a streamed answer does: word by word, each fading up. */
+	.tagline span {
+		animation: stream var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate) both;
+		animation-delay: calc(350ms + var(--i) * 70ms);
+		display: inline-block;
+		white-space: pre;
+	}
+	@keyframes stream {
+		from {
+			opacity: 0;
+			transform: translateY(0.25em);
+		}
 	}
 	.actions {
 		align-items: center;
@@ -103,7 +125,7 @@ const { title = data.title, tagline, actions = [] } = data.hero || {};
 
 	/* Decorative container-colour shapes behind the hero; the corners breathe between two scale steps. */
 	.shapes {
-		inset: -4rem -2rem;
+		inset: -4rem -1rem;
 		overflow: hidden;
 		pointer-events: none;
 		position: absolute;

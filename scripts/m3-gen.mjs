@@ -4,9 +4,12 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import {
+	DynamicScheme,
 	Hct,
 	MaterialDynamicColors,
 	SchemeTonalSpot,
+	TonalPalette,
+	Variant,
 	argbFromHex,
 	hexFromArgb,
 } from '@material/material-color-utilities';
@@ -41,7 +44,22 @@ const roles = Object.getOwnPropertyNames(MaterialDynamicColors).filter(
 	(k) => MaterialDynamicColors[k]?.getArgb && !k.endsWith('PaletteKeyColor'),
 );
 const scheme = (seed, dark) => {
-	const s = new SchemeTonalSpot(Hct.fromInt(argbFromHex(seed)), dark, 0);
+	const source = Hct.fromInt(argbFromHex(seed));
+	const spot = new SchemeTonalSpot(source, dark, 0);
+	// Tonal spot, with two departures: the primary keeps more of the seed's chroma, and the neutrals are a warm
+	// paper tone instead of a tint of the seed, so surfaces read as cream and not as pink.
+	const s = new DynamicScheme({
+		sourceColorHct: source,
+		variant: Variant.TONAL_SPOT,
+		isDark: dark,
+		contrastLevel: 0,
+		primaryPalette: TonalPalette.fromHueAndChroma(source.hue, 48),
+		secondaryPalette: spot.secondaryPalette,
+		tertiaryPalette: spot.tertiaryPalette,
+		neutralPalette: TonalPalette.fromHueAndChroma(88, 4),
+		neutralVariantPalette: TonalPalette.fromHueAndChroma(84, 7),
+		errorPalette: spot.errorPalette,
+	});
 	return roles.map(
 		(k) => `--md-sys-color-${kebab(k)}: ${hexFromArgb(MaterialDynamicColors[k].getArgb(s))};`,
 	);

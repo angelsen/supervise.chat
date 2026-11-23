@@ -1,0 +1,82 @@
+---
+title: Why repld
+description: supervise needs to reach a session that is idle and to keep state across a clear. repld is the kernel that does both.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+[repld](https://github.com/angelsen/repld) is a long-running Python kernel
+that Claude Code reaches over MCP. One runs per project, every seat of that
+project connects to it, and it can push a message into a session that is
+doing nothing.
+
+supervise is built on it for one reason: **a Claude Code session cannot be
+reached from outside while it is idle.**
+
+## The problem
+
+A session acts when you type, and its hooks fire on its own events: a turn
+ending, a tool finishing. Between turns it is asleep. So when a worker
+finishes a branch, nothing can tell the master. When a test suite takes ten
+minutes, the session either sits in the turn waiting or asks again and again.
+
+Without a way in, every arrangement of several sessions ends up the same way:
+sessions that poll, or a person who carries messages between terminals.
+
+## What the kernel gives supervise
+
+| Need                                    | What repld does                                                              |
+| --------------------------------------- | ---------------------------------------------------------------------------- |
+| Tell an idle session something          | A channel push arrives as a new message and wakes it                         |
+| Run long work without holding the turn  | The work runs as a kernel task; the turn ends, and the result is pushed back |
+| Keep state across a clear               | Tasks in flight, receipts and the roster live in the kernel, not the chat    |
+| Let seats see each other                | One kernel per project is the shared place every seat reports to             |
+
+In the layers of [the cairn](/concepts/cairn/), the kernel is the bus: files
+are the store, the transcript is a cache, and the kernel carries what has to
+move between sessions.
+
+## Where you see it
+
+- **A report reaches the master.** A worker's finished branch shows up in the
+  master's conversation as a line starting `← repld:`. The master was idle
+  until it arrived.
+- **A handoff keeps its seat.** After a clear, the kernel files the fresh
+  session under the same seat, so the reports and tasks that belonged to the
+  old conversation now reach the new one.
+- **Nobody polls.** A seat starts a check, ends its turn, and is woken with
+  the result.
+
+## Why not something simpler
+
+- **Hooks alone.** A hook runs only on the events of its own session. It
+  cannot start a turn in another session, or in its own once it is idle.
+- **Files alone.** Files hold state well, and supervise uses them for
+  everything durable. A file cannot wake anyone, so files alone mean polling.
+- **A terminal multiplexer.** Typing into another pane does reach it, and
+  supervise's seat host types `/clear` this way. Keystrokes carry no result
+  back and need an empty input box, so they are for the clear, not for
+  messages.
+
+## What it asks of you
+
+- **Nothing to install by hand.** `./install.sh` installs repld when it is
+  missing, and `supervise doctor` checks that its version is new enough.
+- **One consent screen.** Channel push is a research preview in Claude Code,
+  so a seat starts with a development flag and Claude Code asks you to confirm
+  it. `supervise claude` passes the flag for you.
+- **A connected MCP server.** `claude mcp list` must show repld as connected
+  in the project your seats start in.
+
+<Aside type="caution">
+	Without a connected kernel a seat still runs and `supervise status` still
+	works, but a handoff ends in `not rebound`: the fresh session could not be
+	filed under its seat, and nothing is sent to it.
+</Aside>
+
+## More than supervise uses
+
+repld is a general tool: a shared Python namespace, timers, a scriptable
+browser, and small Python files that become tools. supervise uses the kernel,
+its tasks and its push. The rest is there for your own work in the same
+seats.

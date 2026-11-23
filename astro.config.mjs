@@ -7,16 +7,19 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'supervise',
-			logo: { src: './src/assets/cairn.svg' },
 			description:
 				'Run several Claude Code sessions side by side and keep them going.',
 			customCss: [
-				'@fontsource-variable/roboto-flex/full.css',
+				'@fontsource-variable/hanken-grotesk/index.css',
+				'@fontsource-variable/source-serif-4/opsz.css',
 				'@fontsource-variable/roboto-mono/index.css',
 				'./src/styles/m3.css',
 				'./src/styles/theme.css',
 			],
-			components: { Hero: './src/components/Hero.astro' },
+			components: {
+				Hero: './src/components/Hero.astro',
+				SiteTitle: './src/components/SiteTitle.astro',
+			},
 			sidebar: [
 				{
 					label: 'Start',
@@ -32,6 +35,7 @@ export default defineConfig({
 						{ label: 'The cairn', slug: 'concepts/cairn' },
 						{ label: 'Vocabulary', slug: 'concepts/vocabulary' },
 						{ label: 'How it works', slug: 'concepts/how-it-works' },
+						{ label: 'Why repld', slug: 'concepts/repld' },
 						{ label: 'macOS and Linux', slug: 'concepts/platforms' },
 					],
 				},

@@ -20,7 +20,7 @@
 	--sl-color-text-accent: var(--md-sys-color-primary);
 	--sl-color-text-invert: var(--md-sys-color-on-secondary-container);
 	--sl-color-bg: var(--md-sys-color-surface);
-	--sl-color-bg-nav: var(--md-sys-color-surface-container);
+	--sl-color-bg-nav: var(--md-sys-color-surface);
 	--sl-color-bg-sidebar: var(--md-sys-color-surface-container-low);
 	--sl-color-bg-inline-code: var(--md-sys-color-surface-container-highest);
 	--sl-color-bg-accent: var(--md-sys-color-secondary-container);
@@ -36,7 +36,12 @@
 	--sl-color-purple: var(--md-sys-color-secondary);
 	--sl-color-purple-high: var(--md-sys-color-on-secondary-container);
 
-	--sl-font: 'Roboto Flex Variable';
+	/* md.comp.app-bar.small.container.height, at every width. */
+	--sl-nav-height: 4rem;
+
+	--sl-font: 'Hanken Grotesk Variable';
+	/* M3's brand typeface, for display, headline and title roles; the plain one above carries body and labels. */
+	--font-brand: 'Source Serif 4 Variable', Georgia, serif;
 	--sl-font-mono: 'Roboto Mono Variable';
 
 	--sl-text-body: var(--md-sys-typescale-body-large-size);
@@ -63,17 +68,57 @@
 	outline-offset: var(--md-sys-state-focus-indicator-outer-offset);
 }
 
+/* Each heading takes a whole type role: face, size, weight, tracking and line height together. */
 .sl-markdown-content :is(h1, h2, h3, h4),
 .content-panel h1#_top:not(.landing *) {
-	font-weight: 400;
 	color: var(--md-sys-color-on-surface);
 }
+.content-panel h1#_top:not(.landing *),
+.sl-markdown-content h1 {
+	font-family: var(--font-brand);
+	font-size: var(--md-sys-typescale-headline-large-size);
+	font-weight: var(--md-sys-typescale-headline-large-weight);
+	letter-spacing: var(--md-sys-typescale-headline-large-tracking);
+	line-height: var(--md-sys-typescale-headline-large-line-height);
+}
+.sl-markdown-content h2 {
+	font-family: var(--font-brand);
+	font-size: var(--md-sys-typescale-headline-small-size);
+	font-weight: var(--md-sys-typescale-headline-small-weight);
+	letter-spacing: var(--md-sys-typescale-headline-small-tracking);
+	line-height: var(--md-sys-typescale-headline-small-line-height);
+}
+.sl-markdown-content h3 {
+	font-family: var(--font-brand);
+	font-size: var(--md-sys-typescale-title-large-size);
+	font-weight: var(--md-sys-typescale-title-large-weight);
+	letter-spacing: var(--md-sys-typescale-title-large-tracking);
+	line-height: var(--md-sys-typescale-title-large-line-height);
+}
+/* title-medium is set in the plain face, not the brand one. */
+.sl-markdown-content h4 {
+	font-family: var(--__sl-font);
+	font-size: var(--md-sys-typescale-title-medium-size);
+	font-weight: var(--md-sys-typescale-title-medium-weight);
+	letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+	line-height: var(--md-sys-typescale-title-medium-line-height);
+}
+.sl-markdown-content :is(p, li):not(.title, .starlight-aside__title) {
+	letter-spacing: var(--md-sys-typescale-body-large-tracking);
+}
 
-/* Navigation drawer items: full-round, 56dp tall is the spec's; 40 keeps a docs tree dense. */
+/* Navigation drawer items: md.comp.navigation-drawer.active-indicator.height is 56dp, label-large. */
 .sidebar-content a {
+	align-items: center;
 	border-radius: var(--md-sys-shape-corner-full);
-	padding-block: 0.5rem;
+	display: flex;
+	min-height: 3.5rem;
+	padding-block: 0;
 	padding-inline: var(--md-sys-space200);
+	font-size: var(--md-sys-typescale-label-large-size);
+	font-weight: var(--md-sys-typescale-label-large-weight);
+	letter-spacing: var(--md-sys-typescale-label-large-tracking);
+	line-height: var(--md-sys-typescale-label-large-line-height);
 	transition: background-color var(--md-sys-motion-spring-fast-effects-duration)
 		var(--md-sys-motion-spring-fast-effects);
 }
@@ -81,13 +126,24 @@
 	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
 }
 .sidebar-content a:active {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-pressed), transparent);
+	background-color: color-mix(in srgb, var(--md-sys-color-on-secondary-container) var(--state-pressed), transparent);
 }
-.sidebar-content a[aria-current='page'],
-.sidebar-content a[aria-current='page']:hover {
+.sidebar-content a:focus-visible {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-focus), transparent);
+	/* md.comp.navigation-drawer.focus.indicator.outline.offset: the ring sits inside the item. */
+	outline-offset: var(--md-sys-state-focus-indicator-inner-offset);
+}
+.sidebar-content a[aria-current='page'] {
 	background-color: var(--md-sys-color-secondary-container);
 	color: var(--md-sys-color-on-secondary-container);
-	font-weight: 600;
+	font-weight: 700;
+}
+/* The active item's state layers go over its container colour. */
+.sidebar-content a[aria-current='page']:hover {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-secondary-container) var(--state-hover), var(--md-sys-color-secondary-container));
+}
+.sidebar-content a[aria-current='page']:is(:focus-visible, :active) {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-secondary-container) var(--state-pressed), var(--md-sys-color-secondary-container));
 }
 
 /* Text links in prose and the table of contents get a hover state layer, not a colour change. */
@@ -120,6 +176,9 @@ starlight-toc a:hover {
 
 .sl-markdown-content table {
 	font-size: var(--md-sys-typescale-body-medium-size);
+	font-weight: var(--md-sys-typescale-body-medium-weight);
+	letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+	line-height: var(--md-sys-typescale-body-medium-line-height);
 }
 
 /* Pagination: outlined cards with a state layer. */
@@ -135,16 +194,66 @@ starlight-toc a:hover {
 	border-color: var(--md-sys-color-outline-variant);
 }
 
-/* Tabs: primary tabs, the active one carries the indicator and the primary colour. */
-starlight-tabs [role='tab'] {
+/* Primary tabs (md.comp.primary-navigation-tab): 48dp, title-small, a 1dp divider, and a 3dp primary indicator
+   as wide as the label with 3dp top corners. */
+starlight-tabs [role='tablist'] {
+	border-bottom: 1px solid var(--md-sys-color-surface-variant);
+}
+starlight-tabs .tab > [role='tab'] {
+	box-shadow: none;
+	color: var(--md-sys-color-on-surface-variant);
+	justify-content: center;
+	min-height: 3rem;
+	outline-offset: var(--md-sys-state-focus-indicator-inner-offset);
+	padding: 0 var(--md-sys-space200);
+	position: relative;
 	font-size: var(--md-sys-typescale-title-small-size);
 	font-weight: var(--md-sys-typescale-title-small-weight);
+	letter-spacing: var(--md-sys-typescale-title-small-tracking);
+	line-height: var(--md-sys-typescale-title-small-line-height);
+	transition: background-color var(--md-sys-motion-spring-fast-effects-duration)
+		var(--md-sys-motion-spring-fast-effects);
 }
-starlight-tabs [role='tab']:hover {
+starlight-tabs .tab > [role='tab']:hover {
 	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+	color: var(--md-sys-color-on-surface);
+}
+starlight-tabs .tab > [role='tab']:focus-visible {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-focus), transparent);
+	color: var(--md-sys-color-on-surface);
+}
+starlight-tabs .tab > [role='tab']:active {
+	background-color: color-mix(in srgb, var(--md-sys-color-primary) var(--state-pressed), transparent);
+	color: var(--md-sys-color-on-surface);
+}
+starlight-tabs .tab > [role='tab'][aria-selected='true'] {
+	color: var(--md-sys-color-primary);
+	font-weight: var(--md-sys-typescale-title-small-weight);
+}
+starlight-tabs .tab > [role='tab'][aria-selected='true']:hover {
+	background-color: color-mix(in srgb, var(--md-sys-color-primary) var(--state-hover), transparent);
+}
+starlight-tabs .tab > [role='tab'][aria-selected='true']:is(:focus-visible, :active) {
+	background-color: color-mix(in srgb, var(--md-sys-color-primary) var(--state-pressed), transparent);
+}
+starlight-tabs .tab > [role='tab'][aria-selected='true']::after {
+	background: var(--md-sys-color-primary);
+	border-radius: 3px 3px 0 0;
+	content: '';
+	height: 3px;
+	inset: auto var(--md-sys-space200) 0;
+	position: absolute;
 }
 
-/* Buttons (md.comp.button, small): 40dp, full round, 24dp side space, label-large; press tightens to 8dp. */
+/* Medium windows (600dp and up) take 24dp margins; Starlight widens its own only from 800px. */
+@media (min-width: 37.5rem) and (max-width: 49.99rem) {
+	:root {
+		--sl-content-pad-x: 1.5rem;
+		--sl-nav-pad-x: 1.5rem;
+	}
+}
+
+/* Buttons (md.comp.button.small): 40dp, full round, 16dp side space, label-large; press tightens to 8dp. */
 .sl-link-button,
 .m3-button {
 	align-items: center;
@@ -153,7 +262,7 @@ starlight-tabs [role='tab']:hover {
 	display: inline-flex;
 	gap: var(--md-sys-space100);
 	min-height: 2.5rem;
-	padding: 0 var(--md-sys-space300);
+	padding: 0 var(--md-sys-space200);
 	position: relative;
 	font-size: var(--md-sys-typescale-label-large-size);
 	font-weight: var(--md-sys-typescale-label-large-weight);
@@ -177,6 +286,13 @@ starlight-tabs [role='tab']:hover {
 	position: absolute;
 	transition: opacity var(--md-sys-motion-spring-fast-effects-duration)
 		var(--md-sys-motion-spring-fast-effects);
+}
+/* The 40dp container sits in a 48dp target. */
+.sl-link-button::after,
+.m3-button::after {
+	content: '';
+	inset: -0.25rem 0;
+	position: absolute;
 }
 .sl-link-button:hover::before,
 .m3-button:hover::before {
@@ -209,22 +325,173 @@ starlight-tabs [role='tab']:hover {
 	background: var(--md-sys-color-secondary-container);
 	color: var(--md-sys-color-on-secondary-container);
 }
+.sl-link-button.secondary:hover,
+.m3-button.tonal:hover {
+	box-shadow: var(--elevation-1);
+}
 .sl-link-button.minimal,
 .m3-button.text {
 	background: none;
 	color: var(--md-sys-color-primary);
-	padding-inline: var(--md-sys-space150);
 }
 
-/* md.comp.button.medium: 56dp, title-medium label, press tightens to 12dp. */
+.sl-link-button:is(.primary, .secondary):active,
+.m3-button:is(.filled, .tonal):active {
+	box-shadow: none;
+}
+
+/* md.comp.button.medium: 56dp, 24dp side space, title-medium label, press tightens to 12dp. */
 .m3-button.medium {
 	min-height: 3.5rem;
+	padding-inline: var(--md-sys-space300);
 	font-size: var(--md-sys-typescale-title-medium-size);
 	font-weight: var(--md-sys-typescale-title-medium-weight);
 	letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+	line-height: var(--md-sys-typescale-title-medium-line-height);
 }
 .m3-button.medium:active {
 	border-radius: var(--md-sys-shape-corner-medium);
+}
+
+/* Starlight's own parts, brought to the nearest M3 component. */
+
+/* Starlight draws the skip link in text-invert on text-accent, which this mapping makes unreadable. */
+.sl-skip-link {
+	background: var(--md-sys-color-primary);
+	border-radius: var(--md-sys-shape-corner-full);
+	color: var(--md-sys-color-on-primary);
+	font-size: var(--md-sys-typescale-label-large-size);
+	font-weight: var(--md-sys-typescale-label-large-weight);
+	letter-spacing: var(--md-sys-typescale-label-large-tracking);
+	line-height: var(--md-sys-typescale-label-large-line-height);
+}
+
+.sl-markdown-content code {
+	letter-spacing: normal;
+}
+.sl-markdown-content th {
+	font-weight: var(--md-sys-typescale-title-small-weight);
+}
+.starlight-aside__title {
+	font-size: var(--md-sys-typescale-title-medium-size);
+	font-weight: var(--md-sys-typescale-title-medium-weight);
+	letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+	line-height: var(--md-sys-typescale-title-medium-line-height);
+}
+.sl-markdown-content .card .title {
+	font-size: var(--md-sys-typescale-title-medium-size);
+	font-weight: var(--md-sys-typescale-title-medium-weight);
+	letter-spacing: var(--md-sys-typescale-title-medium-tracking);
+	line-height: var(--md-sys-typescale-title-medium-line-height);
+}
+/* Card icons take container roles in turn, not hues from outside the scheme. */
+.sl-markdown-content .card .icon {
+	background: var(--md-sys-color-primary-container);
+	border: 0;
+	color: var(--md-sys-color-on-primary-container);
+}
+.sl-markdown-content .card:nth-child(4n + 2) .icon {
+	background: var(--md-sys-color-secondary-container);
+	color: var(--md-sys-color-on-secondary-container);
+}
+.sl-markdown-content .card:nth-child(4n + 3) .icon {
+	background: var(--md-sys-color-tertiary-container);
+	color: var(--md-sys-color-on-tertiary-container);
+}
+
+/* md.comp.navigation-drawer.headline: title-small in on-surface-variant, in a 48dp row with a state layer. */
+.sidebar-content summary {
+	border-radius: var(--md-sys-shape-corner-full);
+	min-height: 3rem;
+	padding-inline: var(--md-sys-space200);
+}
+.sidebar-content summary:hover {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+}
+.sidebar-content summary .large {
+	color: var(--md-sys-color-on-surface-variant);
+	font-size: var(--md-sys-typescale-title-small-size);
+	font-weight: var(--md-sys-typescale-title-small-weight);
+	letter-spacing: var(--md-sys-typescale-title-small-tracking);
+	line-height: var(--md-sys-typescale-title-small-line-height);
+}
+
+/* md.comp.search-bar: 56dp, full round, surface-container-high, body-large. Below 800px Starlight shows only the
+   icon, which becomes a 40dp icon button in a 48dp target. */
+site-search button[data-open-modal] {
+	border-radius: var(--md-sys-shape-corner-full);
+	position: relative;
+	transition: background-color var(--md-sys-motion-spring-fast-effects-duration)
+		var(--md-sys-motion-spring-fast-effects);
+}
+site-search button[data-open-modal]:hover {
+	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+}
+@media (max-width: 49.99rem) {
+	site-search button[data-open-modal] {
+		height: 2.5rem;
+		justify-content: center;
+		width: 2.5rem;
+	}
+	site-search button[data-open-modal]::after {
+		content: '';
+		inset: -0.25rem;
+		position: absolute;
+	}
+}
+@media (min-width: 50rem) {
+	site-search button[data-open-modal] {
+		background-color: var(--md-sys-color-surface-container-high);
+		border: 0;
+		color: var(--md-sys-color-on-surface-variant);
+		height: 3.5rem;
+		padding-inline: var(--md-sys-space200);
+		font-size: var(--md-sys-typescale-body-large-size);
+		font-weight: var(--md-sys-typescale-body-large-weight);
+		letter-spacing: var(--md-sys-typescale-body-large-tracking);
+		line-height: var(--md-sys-typescale-body-large-line-height);
+	}
+	site-search button[data-open-modal]:hover {
+		background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), var(--md-sys-color-surface-container-high));
+	}
+}
+
+/* md.comp.icon-button: the code block's copy button as a 40dp round container. */
+:root .expressive-code .copy button {
+	border-radius: var(--md-sys-shape-corner-full);
+	height: 2.5rem;
+	width: 2.5rem;
+}
+
+/* Table of contents rows: label-large in a 40dp row. */
+starlight-toc a,
+mobile-starlight-toc a {
+	align-items: center;
+	display: flex;
+	min-height: 2.5rem;
+	font-size: var(--md-sys-typescale-label-large-size);
+	font-weight: var(--md-sys-typescale-label-large-weight);
+	letter-spacing: var(--md-sys-typescale-label-large-tracking);
+	line-height: var(--md-sys-typescale-label-large-line-height);
+}
+starlight-toc h2 {
+	font-family: var(--__sl-font);
+	font-size: var(--md-sys-typescale-title-small-size);
+	font-weight: var(--md-sys-typescale-title-small-weight);
+	letter-spacing: var(--md-sys-typescale-title-small-tracking);
+	line-height: var(--md-sys-typescale-title-small-line-height);
+}
+/* The mobile bar follows the page's margin, 24dp from 600px. */
+mobile-starlight-toc summary {
+	padding-inline: var(--sl-content-pad-x);
+}
+
+.pagination-links .link-title {
+	font-family: var(--font-brand);
+	font-size: var(--md-sys-typescale-title-large-size);
+	font-weight: var(--md-sys-typescale-title-large-weight);
+	letter-spacing: var(--md-sys-typescale-title-large-tracking);
+	line-height: var(--md-sys-typescale-title-large-line-height);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -7,13 +7,20 @@ import view from '../generated/seatview.json';
 	<div class="steps" role="tablist" aria-label="Steps of a handoff">
 		{
 			view.frames.map((f, i) => (
-				<button role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-frame={i}>
+				<button
+					role="tab"
+					id={`seatview-tab-${i}`}
+					aria-controls="seatview-panel"
+					aria-selected={i === 0 ? 'true' : 'false'}
+					tabindex={i === 0 ? 0 : -1}
+					data-frame={i}
+				>
 					{f.label}
 				</button>
 			))
 		}
 	</div>
-	<div class="screen" style={`--cols:${view.width}`}>
+	<div class="screen" id="seatview-panel" role="tabpanel" aria-labelledby="seatview-tab-0" style={`--cols:${view.width}`}>
 		{
 			view.frames.map((f, i) => (
 				<pre hidden={i !== 0} data-frame={i} set:html={f.lines.join('\n')} />
@@ -30,8 +37,12 @@ import view from '../generated/seatview.json';
 		let timer = 0;
 		const show = (n: number) => {
 			at = n;
-			tabs.forEach((t, i) => t.setAttribute('aria-selected', String(i === n)));
+			tabs.forEach((t, i) => {
+				t.setAttribute('aria-selected', String(i === n));
+				t.tabIndex = i === n ? 0 : -1;
+			});
 			frames.forEach((f, i) => (f.hidden = i !== n));
+			root.querySelector('[role="tabpanel"]')!.setAttribute('aria-labelledby', tabs[n].id);
 		};
 		const play = () => {
 			timer = window.setInterval(() => show((at + 1) % frames.length), 2600);
@@ -43,6 +54,15 @@ import view from '../generated/seatview.json';
 				show(i);
 			}),
 		);
+		// One tab stop for the list; the arrow keys move within it, and any key or focus ends the rotation.
+		root.querySelector('[role="tablist"]')!.addEventListener('keydown', (e) => {
+			const step = (e as KeyboardEvent).key === 'ArrowRight' ? 1 : (e as KeyboardEvent).key === 'ArrowLeft' ? -1 : 0;
+			if (!step) return;
+			clearInterval(timer);
+			show((at + step + tabs.length) % tabs.length);
+			tabs[at].focus();
+		});
+		root.addEventListener('focusin', () => clearInterval(timer));
 		if (!matchMedia('(prefers-reduced-motion: reduce)').matches) play();
 	}
 </script>
@@ -51,34 +71,50 @@ import view from '../generated/seatview.json';
 	.seatview {
 		margin-block: var(--md-sys-space300);
 	}
+	/* Secondary tabs (md.comp.secondary-navigation-tab): they switch the panel below. 48dp, title-small, a 1dp
+	   divider, and a 2dp primary indicator across the whole tab. */
 	.steps {
+		border-bottom: 1px solid var(--md-sys-color-surface-variant);
 		display: flex;
-		flex-wrap: wrap;
-		gap: var(--md-sys-space100);
-		margin-bottom: var(--md-sys-space150);
+		margin-bottom: var(--md-sys-space200);
+		overflow-x: auto;
 	}
-	/* md.comp.filter-chip's shape: 32dp, 8dp corners, label-large. */
 	.steps button {
 		background: none;
-		border: 1px solid var(--md-sys-color-outline-variant);
-		border-radius: var(--md-sys-shape-corner-small);
+		border: 0;
 		color: var(--md-sys-color-on-surface-variant);
 		cursor: pointer;
-		font: inherit;
-		font-size: var(--md-sys-typescale-label-large-size);
-		font-weight: var(--md-sys-typescale-label-large-weight);
-		height: 2rem;
+		flex: 1;
+		font-family: inherit;
+		font-size: var(--md-sys-typescale-title-small-size);
+		font-weight: var(--md-sys-typescale-title-small-weight);
+		letter-spacing: var(--md-sys-typescale-title-small-tracking);
+		line-height: var(--md-sys-typescale-title-small-line-height);
+		min-height: 3rem;
+		outline-offset: var(--md-sys-state-focus-indicator-inner-offset);
 		padding: 0 var(--md-sys-space200);
+		position: relative;
 		transition: background-color var(--md-sys-motion-spring-fast-effects-duration)
 			var(--md-sys-motion-spring-fast-effects);
+		white-space: nowrap;
 	}
 	.steps button:hover {
 		background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+		color: var(--md-sys-color-on-surface);
+	}
+	.steps button:is(:focus-visible, :active) {
+		background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-pressed), transparent);
+		color: var(--md-sys-color-on-surface);
 	}
 	.steps button[aria-selected='true'] {
-		background: var(--md-sys-color-secondary-container);
-		border-color: transparent;
-		color: var(--md-sys-color-on-secondary-container);
+		color: var(--md-sys-color-on-surface);
+	}
+	.steps button[aria-selected='true']::after {
+		background: var(--md-sys-color-primary);
+		content: '';
+		height: 2px;
+		inset: auto 0 0;
+		position: absolute;
 	}
 	.screen {
 		background: var(--md-sys-color-surface-container-lowest);
@@ -113,8 +149,9 @@ import view from '../generated/seatview.json';
 	pre :global(.dim) {
 		color: var(--md-sys-color-on-surface-variant);
 	}
+	/* outline falls under 4.5:1 as text in the light theme. */
 	pre :global(.faint) {
-		color: var(--md-sys-color-outline);
+		color: var(--md-sys-color-on-surface-variant);
 	}
 	pre :global(.b) {
 		font-weight: 700;

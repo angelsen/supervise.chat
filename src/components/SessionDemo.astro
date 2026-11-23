@@ -1,6 +1,8 @@
 ---
 // A scripted tmux window: a master seat, then `supervise up 2 2 --arm` beside it. The markup is a still of the
 // running grid, which is what a reader without scripts or with reduced motion sees.
+import CairnMark from './CairnMark.astro';
+
 const workers = ['w1', 'w2', 'w3', 'w4'];
 // The demo's chapters, in the order the script's `chapter` ops name them.
 const chapters = [
@@ -112,6 +114,9 @@ const still: Record<string, [string, string][]> = {
 			<button class="icon" data-act="next" aria-label="Next part">
 				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 18 8.5-6L6 6zM16 6v12h2V6z" /></svg>
 			</button>
+			<span class="glyph">
+				<CairnMark />
+			</span>
 			<div class="captions" aria-live="polite">
 				{chapters.map(([, text], i) => <p class="caption" data-chapter={i} hidden={i !== chapters.length - 1}>{text}</p>)}
 			</div>
@@ -164,7 +169,8 @@ const still: Record<string, [string, string][]> = {
 		['ctx', seat, 9],
 	];
 
-	const SCRIPT: Op[] = [
+	// `small` is the phone's script: `supervise up 2`, one column of two seats, and two tasks.
+	const script = (small: boolean): Op[] => [
 		['stage', 'solo'],
 		['chapter', 0],
 		['sh', 'master', 'supervise claude --seat master --master'],
@@ -172,20 +178,26 @@ const still: Record<string, [string, string][]> = {
 		['wait', 700],
 		['chapter', 1],
 		['stage', 'split'],
-		['sh', 'right', 'supervise up 2 2 --arm'],
+		['sh', 'right', small ? 'supervise up 2 --arm' : 'supervise up 2 2 --arm'],
 		['stage', 'grid'],
-		['all', ['w1', 'w2', 'w3', 'w4'].map((s): Op => ['boot', s])],
-		['all', ['w1', 'w2', 'w3', 'w4'].map((s): Op => ['out', s, 'armed', 'dim'])],
+		['all', (small ? ['w1', 'w2'] : ['w1', 'w2', 'w3', 'w4']).map((s): Op => ['boot', s])],
+		['all', (small ? ['w1', 'w2'] : ['w1', 'w2', 'w3', 'w4']).map((s): Op => ['out', s, 'armed', 'dim'])],
 		['wait', 600],
 		['chapter', 2],
-		['type', 'master', 'Three tasks, one per seat: fix the session refresh in atlas, add CSV export to billing, find the empty-search bug in atlas.'],
+		[
+			'type',
+			'master',
+			small
+				? 'Two tasks, one per seat: fix the session refresh in atlas, add CSV export to billing.'
+				: 'Three tasks, one per seat: fix the session refresh in atlas, add CSV export to billing, find the empty-search bug in atlas.',
+		],
 		['send', 'master'],
 		['spin', 'master', 'Baking', 'Baked'],
 		['out', 'master', "● Bash(supervise inject --seat w1 '/atlas fix the session refresh')", 'tool'],
 		['out', 'master', '  ⎿  w1: injected', 'dim'],
 		['out', 'master', "● Bash(supervise inject --seat w2 '/billing add CSV export')", 'tool'],
 		['out', 'master', '  ⎿  w2: injected', 'dim'],
-		['out', 'master', '● Routed: w1 /atlas, w2 /billing, w3 /atlas. w4 stays free.'],
+		['out', 'master', small ? '● Routed: w1 /atlas, w2 /billing.' : '● Routed: w1 /atlas, w2 /billing, w3 /atlas. w4 stays free.'],
 		['done', 'master'],
 		['ctx', 'master', 38],
 		[
@@ -193,7 +205,7 @@ const still: Record<string, [string, string][]> = {
 			[
 				work('w1', 'atlas', 'fix the session refresh', 'src/auth/session.ts', 'auth', '12', 'Churning', 'Churned'),
 				[['wait', 500], ...work('w2', 'billing', 'add CSV export', 'src/export/csv.ts', 'export', '8', 'Cogitating', 'Cogitated')],
-				[['wait', 900], ...work('w3', 'atlas', 'find the empty-search bug', 'src/search/query.ts', 'search', '21', 'Crunching', 'Crunched')],
+				small ? [] : [['wait', 900], ...work('w3', 'atlas', 'find the empty-search bug', 'src/search/query.ts', 'search', '21', 'Crunching', 'Crunched')],
 			],
 		],
 		['chapter', 3],
@@ -202,18 +214,22 @@ const still: Record<string, [string, string][]> = {
 		['out', 'master', '● Receipt is green. Landing agent-w1-auth.'],
 		['ctx', 'master', 61],
 		['out', 'master', '← repld: [roster.tell from kernel] [auto_land agent-w1-auth] landed', 'chan'],
-		['out', 'master', '● Landed a1b2c3d. w2 and w3 are still working.'],
+		['out', 'master', small ? '● Landed a1b2c3d. w2 is still working.' : '● Landed a1b2c3d. w2 and w3 are still working.'],
 		['chapter', 4],
 		...handoff('w1', 86, 'token rotation', 'Picking up from the recap: token rotation.'),
 		[
 			'lanes',
 			[
 				handoff('w2', 88, 'answer the review', 'Reading the review notes from the recap.'),
-				[['wait', 800], ['out', 'w3', '● Bash(supervise committed --branch agent-w3-search)', 'tool']],
+				small ? [] : [['wait', 800], ['out', 'w3', '● Bash(supervise committed --branch agent-w3-search)', 'tool']],
 			],
 		],
-		['out', 'master', '← repld: [roster.tell from w3] COMMITTED atlas agent-w3-search 9f8e7d6', 'chan'],
-		...handoff('master', 87, 'land w3, route w4', 'Reading the recap: landing agent-w3-search.'),
+		...(small
+			? handoff('master', 87, 'route the next task', 'Reading the recap: w2 has the review.')
+			: ([
+					['out', 'master', '← repld: [roster.tell from w3] COMMITTED atlas agent-w3-search 9f8e7d6', 'chan'],
+					...handoff('master', 87, 'land w3, route w4', 'Reading the recap: landing agent-w3-search.'),
+				] as Op[])),
 		['wait', 4200],
 	];
 
@@ -223,6 +239,8 @@ const still: Record<string, [string, string][]> = {
 
 	const term = document.querySelector<HTMLElement>('.term .win');
 	if (term && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		// 40rem is the container width at which the stylesheet stacks the panes.
+		const SCRIPT = script(term.clientWidth < 640);
 		// While `fast`, nothing waits: a jump to a chapter replays what came before it in one frame.
 		let fast = false;
 		// `auto` plays every chapter and loops; off, the demo stops at the end of the chapter the reader chose.
@@ -240,6 +258,7 @@ const still: Record<string, [string, string][]> = {
 		const toggle = figure.querySelector<HTMLButtonElement>('[data-act="toggle"]')!;
 		const setPaused = (v: boolean) => {
 			paused = v;
+			playing();
 			figure.classList.toggle('paused', v);
 			toggle.setAttribute('aria-label', v ? 'Play' : 'Pause');
 		};
@@ -461,11 +480,16 @@ const still: Record<string, [string, string][]> = {
 			if (paused) auto = true;
 			setPaused(!paused);
 		});
+		// The caption's cairn builds, stone by stone, while the demo plays and stands complete when it does not.
+		const cairn = figure.querySelector('.glyph .cairn')!;
+		const playing = () => cairn.classList.toggle('building', !paused && !hidden);
+
 		// Off screen the demo holds its frame; it starts the first time it is seen.
 		let started = false;
 		new IntersectionObserver(
 			([entry]) => {
 				hidden = !entry.isIntersecting;
+				playing();
 				if (hidden || started) return;
 				started = true;
 				run += 1;
@@ -589,8 +613,9 @@ const still: Record<string, [string, string][]> = {
 		shape-rendering: crispEdges;
 		width: calc(4.35em * 18 / 12 * 0.83);
 	}
+	/* Black in both themes: it is the terminal background Claude Code paints behind these cells. */
 	.scroll :global(.banner .eye) {
-		fill: var(--md-sys-color-scrim);
+		fill: #000;
 	}
 	.scroll :global(.banner p + p) {
 		margin-top: 0;
@@ -609,7 +634,7 @@ const still: Record<string, [string, string][]> = {
 	}
 	/* The verb's shimmer: a lighter band sweeping across the letters. */
 	.scroll :global(.spin b) {
-		animation: shimmer 1.6s linear infinite;
+		animation: shimmer var(--md-sys-motion-duration-extra-long4) linear infinite;
 		background: linear-gradient(
 				90deg,
 				var(--md-sys-color-primary) 40%,
@@ -652,6 +677,10 @@ const still: Record<string, [string, string][]> = {
 		border-top: 1px solid currentColor;
 		content: '';
 		flex: 1;
+	}
+	/* The line may be as faint as outline; the seat's name is text and needs on-surface-variant's contrast. */
+	.rule span {
+		color: var(--md-sys-color-on-surface-variant);
 	}
 	.rule span:empty {
 		display: none;
@@ -702,6 +731,20 @@ const still: Record<string, [string, string][]> = {
 		font-weight: 700;
 	}
 
+	/* Panes are square, as tmux draws them, except the corner a pane shares with the window: there its own
+	   corner follows the window's, so the active border and the pulse are not cut off by the rounding. */
+	.win {
+		--corner: calc(var(--md-sys-shape-corner-large) - 1px);
+	}
+	[data-pane='master'] {
+		border-top-left-radius: var(--corner);
+	}
+	[data-stage='solo'] [data-pane='master'],
+	[data-stage='split'] [data-pane='right'],
+	[data-stage='grid'] [data-pane='w2'] {
+		border-top-right-radius: var(--corner);
+	}
+
 	/* tmux's active-pane border, and the pulse of a seat whose push just reached the master. */
 	.pane {
 		box-shadow: inset 0 0 0 0 transparent;
@@ -711,7 +754,7 @@ const still: Record<string, [string, string][]> = {
 		box-shadow: inset 0 0 0 1px var(--md-sys-color-primary);
 	}
 	.pane.sent {
-		animation: sent 1.2s var(--md-sys-motion-easing-emphasized-decelerate);
+		animation: sent var(--md-sys-motion-duration-extra-long4) var(--md-sys-motion-easing-emphasized-decelerate);
 	}
 	@keyframes sent {
 		0% {
@@ -756,35 +799,54 @@ const still: Record<string, [string, string][]> = {
 	.segments button:hover {
 		background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
 	}
+	.segments button:focus-visible {
+		background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-focus), transparent);
+	}
 	.segments button:active {
 		background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-pressed), transparent);
 	}
-	/* md.comp.linear-progress-indicator: a 4dp full-round track, the active part in primary. */
+	/* md.comp.progress-indicator.linear: 4dp tall, a 4dp space between the active indicator and the track, and a
+	   4dp stop at the track's end, which the spec requires when the track has under 3:1 against its surface. */
 	.bar {
-		background: var(--md-sys-color-secondary-container);
-		border-radius: var(--md-sys-shape-corner-full);
+		display: flex;
 		height: 4px;
-		overflow: hidden;
+		position: relative;
 	}
 	.bar i {
 		background: var(--md-sys-color-primary);
-		border-radius: inherit;
-		display: block;
-		height: 100%;
-		transition: width var(--md-sys-motion-duration-medium4) linear;
-		width: calc(var(--p, 0) * 100%);
+		border-radius: var(--md-sys-shape-corner-full);
+		flex: 0 0 calc(var(--p, 0) * 100%);
+		/* No space before the track while nothing has played. */
+		margin-inline-end: min(4px, calc(var(--p, 0) * 1000px));
+		transition: flex-basis var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard);
+	}
+	.bar::before {
+		background: var(--md-sys-color-secondary-container);
+		border-radius: var(--md-sys-shape-corner-full);
+		content: '';
+		flex: 1;
+		order: 1;
+	}
+	.bar::after {
+		background: var(--md-sys-color-primary);
+		border-radius: var(--md-sys-shape-corner-full);
+		content: '';
+		height: 4px;
+		inset-inline-end: 0;
+		position: absolute;
+		width: 4px;
 	}
 	.label {
 		font-size: var(--md-sys-typescale-label-large-size);
 		font-weight: var(--md-sys-typescale-label-large-weight);
 		letter-spacing: var(--md-sys-typescale-label-large-tracking);
+		line-height: var(--md-sys-typescale-label-large-line-height);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 	.label b {
 		font-weight: inherit;
-		opacity: 0.7;
 	}
 	.segments button[aria-selected='true'] {
 		color: var(--md-sys-color-on-surface);
@@ -832,6 +894,9 @@ const still: Record<string, [string, string][]> = {
 	.icon:hover::before {
 		opacity: var(--md-sys-state-hover-state-layer-opacity);
 	}
+	.icon:focus-visible::before {
+		opacity: var(--md-sys-state-focus-state-layer-opacity);
+	}
 	.icon:active::before {
 		opacity: var(--md-sys-state-pressed-state-layer-opacity);
 	}
@@ -856,9 +921,17 @@ const still: Record<string, [string, string][]> = {
 	.paused .icon .play {
 		display: block;
 	}
+	.glyph {
+		color: var(--md-sys-color-primary);
+		display: inline-flex;
+		margin-inline-start: var(--md-sys-space100);
+	}
+	.glyph :global(.cairn) {
+		height: 1.75rem;
+		width: 1.75rem;
+	}
 	.captions {
 		flex: 1;
-		margin-inline-start: var(--md-sys-space100);
 	}
 	.caption {
 		color: var(--md-sys-color-on-surface-variant);
@@ -874,7 +947,39 @@ const still: Record<string, [string, string][]> = {
 		}
 	}
 
+	/* Narrow: what `supervise up 2` gives a small terminal, stacked: the master, then two seats, full width. */
 	@container (max-width: 40rem) {
+		.win {
+			font-size: clamp(8.5px, 3cqi, 11.5px);
+			height: min(58em, calc(100svh - 17rem));
+		}
+		.panes {
+			grid-template-columns: 1fr;
+			grid-template-rows: 5fr 3fr 3fr;
+		}
+		[data-pane='master'] {
+			grid-column: 1;
+			grid-row: 1;
+		}
+		[data-pane='right'] {
+			grid-column: 1;
+			grid-row: 2 / 4;
+		}
+		[data-pane='w3'],
+		[data-pane='w4'] {
+			display: none;
+		}
+		/* Stacked, the master spans the top, so both top corners are its own and no other pane has one. */
+		[data-pane='master'] {
+			border-top-right-radius: var(--corner);
+		}
+		[data-stage] [data-pane='right'],
+		[data-stage] [data-pane='w2'] {
+			border-top-right-radius: 0;
+		}
+		[data-stage='solo'] .panes {
+			grid-template-rows: 1fr;
+		}
 		.label {
 			display: none;
 		}
@@ -882,24 +987,12 @@ const still: Record<string, [string, string][]> = {
 			display: block;
 			overflow: visible;
 		}
-		.win {
-			font-size: clamp(7.5px, 2.3cqi, 11px);
-			height: 52em;
+		.transport {
+			flex-wrap: wrap;
 		}
-		.panes {
-			grid-template-columns: 1fr 1fr;
-			grid-template-rows: 5fr 3fr 3fr;
-		}
-		[data-pane='master'],
-		[data-pane='right'] {
-			grid-column: 1 / 3;
-			grid-row: 1;
-		}
-		[data-stage='split'] .panes {
-			grid-template-rows: 1fr 1fr;
-		}
-		[data-stage='split'] [data-pane='right'] {
-			grid-row: 2;
+		.captions {
+			flex-basis: 100%;
+			min-height: 4.5rem;
 		}
 	}
 </style>
