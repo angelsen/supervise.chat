@@ -5,9 +5,33 @@
 
 <svg class="cairn" viewBox="0 0 24 24" aria-hidden="true">
 	<ellipse class="stone" style="--n:0" cx="12" cy="20.2" rx="9" ry="2.6"></ellipse>
-	<ellipse class="stone" style="--n:1" cx="12.4" cy="15" rx="6.6" ry="2.3" transform="rotate(-3 12.4 15)"></ellipse>
-	<ellipse class="stone" style="--n:2" cx="11.6" cy="10.4" rx="4.6" ry="2.1" transform="rotate(4 11.6 10.4)"></ellipse>
-	<ellipse class="stone" style="--n:3" cx="12.3" cy="6.2" rx="2.9" ry="1.9" transform="rotate(-5 12.3 6.2)"></ellipse>
+	<ellipse
+		class="stone"
+		style="--n:1"
+		cx="12.4"
+		cy="15"
+		rx="6.6"
+		ry="2.3"
+		transform="rotate(-3 12.4 15)"
+	></ellipse>
+	<ellipse
+		class="stone"
+		style="--n:2"
+		cx="11.6"
+		cy="10.4"
+		rx="4.6"
+		ry="2.1"
+		transform="rotate(4 11.6 10.4)"
+	></ellipse>
+	<ellipse
+		class="stone"
+		style="--n:3"
+		cx="12.3"
+		cy="6.2"
+		rx="2.9"
+		ry="1.9"
+		transform="rotate(-5 12.3 6.2)"
+	></ellipse>
 </svg>
 
 <style is:global>
@@ -27,7 +51,7 @@
 			translate: 0 -5px;
 		}
 	}
-	/* As a spinner: five frames of 120 ms, the stack one stone taller in each, played forward then back. */
+	/* As a spinner: four frames of 150 ms, the stack one stone taller in each, played forward then back. */
 	.cairn.building .stone,
 	a:hover > .cairn .stone {
 		animation: cairn-frames 600ms steps(1) infinite alternate;

@@ -19,7 +19,7 @@ const SEEDS = { ember: '#c4501b' };
 
 const dir = join(
 	process.env.RESOURCES_HOME ?? join(homedir(), '.local/share/resources'),
-	'm3.material.io/tokens',
+	'm3.material.io/tokens'
 );
 const tokens = new Map();
 for (const name of readdirSync(dir)) {
@@ -34,14 +34,16 @@ const need = (token) => {
 	return value;
 };
 const under = (prefix, pattern) =>
-	[...tokens.keys()].filter((t) => t.startsWith(prefix) && pattern.test(t.slice(prefix.length))).sort();
+	[...tokens.keys()]
+		.filter((t) => t.startsWith(prefix) && pattern.test(t.slice(prefix.length)))
+		.sort();
 const cssName = (token) => '--' + token.replaceAll('.', '-');
 const num = (value) => parseFloat(value);
 const rem = (value) => `${num(value) / 16}rem`;
 
 const kebab = (name) => name.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase());
 const roles = Object.getOwnPropertyNames(MaterialDynamicColors).filter(
-	(k) => MaterialDynamicColors[k]?.getArgb && !k.endsWith('PaletteKeyColor'),
+	(k) => MaterialDynamicColors[k]?.getArgb && !k.endsWith('PaletteKeyColor')
 );
 const scheme = (seed, dark) => {
 	const source = Hct.fromInt(argbFromHex(seed));
@@ -61,7 +63,7 @@ const scheme = (seed, dark) => {
 		errorPalette: spot.errorPalette,
 	});
 	return roles.map(
-		(k) => `--md-sys-color-${kebab(k)}: ${hexFromArgb(MaterialDynamicColors[k].getArgb(s))};`,
+		(k) => `--md-sys-color-${kebab(k)}: ${hexFromArgb(MaterialDynamicColors[k].getArgb(s))};`
 	);
 };
 
@@ -72,13 +74,19 @@ const spring = (name) => {
 	const at = (t) => {
 		if (zeta >= 1) return 1 - Math.exp(-w0 * t) * (1 + w0 * t);
 		const wd = w0 * Math.sqrt(1 - zeta * zeta);
-		return 1 - Math.exp(-zeta * w0 * t) * (Math.cos(wd * t) + ((zeta * w0) / wd) * Math.sin(wd * t));
+		return (
+			1 - Math.exp(-zeta * w0 * t) * (Math.cos(wd * t) + ((zeta * w0) / wd) * Math.sin(wd * t))
+		);
 	};
 	let settle = 0;
 	for (let t = 0; t < 3; t += 0.001) if (Math.abs(1 - at(t)) > 0.001) settle = t;
 	const steps = 32;
 	const points = Array.from({ length: steps + 1 }, (_, i) =>
-		i === steps ? '1' : at((settle * i) / steps).toFixed(4).replace(/\.?0+$/, '') || '0',
+		i === steps
+			? '1'
+			: at((settle * i) / steps)
+					.toFixed(4)
+					.replace(/\.?0+$/, '') || '0'
 	);
 	const css = name.replaceAll('.', '-');
 	return [
@@ -99,22 +107,27 @@ for (const role of ['display', 'headline', 'title', 'body', 'label']) {
 			`${cssName(t)}-size: ${rem(need(`${t}.size`))};`,
 			`${cssName(t)}-line-height: ${rem(need(`${t}.line-height`))};`,
 			`${cssName(t)}-weight: ${need(`${t}.weight`)};`,
-			`${cssName(t)}-tracking: ${rem(need(`${t}.tracking`))};`,
+			`${cssName(t)}-tracking: ${rem(need(`${t}.tracking`))};`
 		);
 	}
 }
 for (const t of under('md.sys.measurement.space', /^\d+$/).sort(
-	(a, b) => num(need(a)) - num(need(b)),
+	(a, b) => num(need(a)) - num(need(b))
 )) {
 	base.push(`${cssName(t).replace('measurement-', '')}: ${rem(need(t))};`);
 }
-for (const t of under('md.sys.state.', /state-layer-opacity$/)) base.push(`${cssName(t)}: ${need(t)};`);
+for (const t of under('md.sys.state.', /state-layer-opacity$/))
+	base.push(`${cssName(t)}: ${need(t)};`);
 for (const part of ['thickness', 'outer-offset', 'inner-offset']) {
 	const t = `md.sys.state.focus-indicator.${part}`;
 	base.push(`${cssName(t)}: ${num(need(t))}px;`);
 }
-for (const t of under('md.sys.motion.duration.', /^[a-z-]+\d$/)) base.push(`${cssName(t)}: ${need(t)};`);
-for (const t of under('md.sys.motion.easing.', /^(standard|emphasized)(\.(accelerate|decelerate))?$/)) {
+for (const t of under('md.sys.motion.duration.', /^[a-z-]+\d$/))
+	base.push(`${cssName(t)}: ${need(t)};`);
+for (const t of under(
+	'md.sys.motion.easing.',
+	/^(standard|emphasized)(\.(accelerate|decelerate))?$/
+)) {
 	base.push(`${cssName(t)}: ${need(t)};`);
 }
 for (const speed of ['fast', 'default', 'slow']) {

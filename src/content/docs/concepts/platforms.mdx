@@ -1,36 +1,42 @@
 ---
 title: macOS and Linux
-description: Where supervise is developed, where it is being ported, and how to tell on your machine.
+description: Where supervise is developed, what has been run on a Mac, and what differs there.
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
-| Platform | State                                             |
-| -------- | ------------------------------------------------- |
-| Linux    | where supervise is developed and run every day    |
-| macOS    | being ported; measured on Apple silicon           |
-| Windows  | not tried                                         |
+| Platform | State                                                              |
+| -------- | ------------------------------------------------------------------ |
+| Linux    | where supervise is developed and run every day                     |
+| macOS    | runs on Apple silicon; seats and the seat view have been run there |
+| Windows  | not tried                                                          |
 
 <Aside type="caution">
-	The macOS port is in progress. Treat this page as a direction, and
-	`supervise doctor` on your own machine as the answer.
+	macOS support is new. Seats start and the seat view opens on the Mac it was
+	measured on. Neither a full `./install.sh` run nor a handoff has been tested
+	on a Mac yet.
 </Aside>
 
 ## What differs on a Mac
 
 - **Process facts.** Linux answers "which process is this, and who started
   it" from `/proc`. macOS has no `/proc`, so the seat host reads the same
-  facts another way.
+  facts from the process table.
 - **Memory.** The check that keeps a heavy job from starting on a full machine
   reads available memory differently on each system.
 - **The seat-view key.** The default key that opens the seat view is
-  `Ctrl+\`. Some Mac terminal and keyboard-layout combinations send a
-  different byte for that chord, so the installer offers to capture a key of
-  your choice: `supervise prefix --capture`.
+  `Ctrl+\`. A Norwegian Mac keyboard cannot type it, in a bare terminal or
+  inside tmux; `Ctrl+4` opens the view there. Other layouts are not
+  measured. Anywhere `Ctrl+\` fails, `supervise prefix --capture` stores a
+  chord you press that works; the installer offers it once.
 - **The runtime directory.** Linux has `/run/user/<uid>`. On a Mac, doctor
   sets up a directory under the system temp directory and names it.
+- **The socket path.** Each seat listens on a Unix socket in the runtime
+  directory. macOS allows 103 bytes for that path, Linux 107. The default
+  directory fits; with a longer one `supervise claude` stops and names the
+  limit, and a shorter `XDG_RUNTIME_DIR` is the fix.
 
 ## What is the same
 
-The seats, the plugin, the recap and the handoff are the same code on both.
-repld runs on both.
+The seats, the plugin and the recap are the same code on both, and repld runs
+on both. The handoff is the same code too, and has only been run on Linux.

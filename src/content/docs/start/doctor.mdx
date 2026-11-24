@@ -13,12 +13,12 @@ directory when the machine has none.
 
 ## The four states
 
-| State      | Means                                                 |
-| ---------- | ----------------------------------------------------- |
-| `present`  | found and usable                                      |
-| `absent`   | not there, and not needed for what you have set up    |
-| `degraded` | works, with a limit; the line says which and its fix  |
-| `missing`  | needed and not there; the line prints its fix         |
+| State      | Means                                                |
+| ---------- | ---------------------------------------------------- |
+| `present`  | found and usable                                     |
+| `absent`   | not there, and not needed for what you have set up   |
+| `degraded` | works, with a limit; the line says which and its fix |
+| `missing`  | needed and not there; the line prints its fix        |
 
 Doctor exits 1 when any line is `missing`, so a script can gate on it.
 
@@ -38,5 +38,6 @@ Doctor exits 1 when any line is `missing`, so a script can gate on it.
 
 ## When a line is wrong
 
-Run the fix the line prints, then run doctor again. The installer ends with
-doctor, so `./install.sh` after a pull is also a recheck.
+Run the fix the line prints, then run doctor again. The installer runs doctor
+too, so `./install.sh` after a pull is also a recheck. At a terminal it then
+offers, once, to store your own [seat-view key](/concepts/platforms/).

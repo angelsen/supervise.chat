@@ -7,8 +7,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'supervise',
-			description:
-				'Run several Claude Code sessions side by side and keep them going.',
+			description: 'Run several Claude Code sessions side by side and keep them going.',
 			customCss: [
 				'@fontsource-variable/hanken-grotesk/index.css',
 				'@fontsource-variable/source-serif-4/opsz.css',

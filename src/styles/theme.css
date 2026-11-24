@@ -123,13 +123,25 @@
 		var(--md-sys-motion-spring-fast-effects);
 }
 .sidebar-content a:hover {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-surface) var(--state-hover),
+		transparent
+	);
 }
 .sidebar-content a:active {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-secondary-container) var(--state-pressed), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-secondary-container) var(--state-pressed),
+		transparent
+	);
 }
 .sidebar-content a:focus-visible {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-focus), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-surface) var(--state-focus),
+		transparent
+	);
 	/* md.comp.navigation-drawer.focus.indicator.outline.offset: the ring sits inside the item. */
 	outline-offset: var(--md-sys-state-focus-indicator-inner-offset);
 }
@@ -140,10 +152,18 @@
 }
 /* The active item's state layers go over its container colour. */
 .sidebar-content a[aria-current='page']:hover {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-secondary-container) var(--state-hover), var(--md-sys-color-secondary-container));
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-secondary-container) var(--state-hover),
+		var(--md-sys-color-secondary-container)
+	);
 }
 .sidebar-content a[aria-current='page']:is(:focus-visible, :active) {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-secondary-container) var(--state-pressed), var(--md-sys-color-secondary-container));
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-secondary-container) var(--state-pressed),
+		var(--md-sys-color-secondary-container)
+	);
 }
 
 /* Text links in prose and the table of contents get a hover state layer, not a colour change. */
@@ -190,7 +210,11 @@ starlight-toc a:hover {
 		var(--md-sys-motion-spring-fast-effects);
 }
 .pagination-links a:hover {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-surface) var(--state-hover),
+		transparent
+	);
 	border-color: var(--md-sys-color-outline-variant);
 }
 
@@ -215,15 +239,27 @@ starlight-tabs .tab > [role='tab'] {
 		var(--md-sys-motion-spring-fast-effects);
 }
 starlight-tabs .tab > [role='tab']:hover {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-surface) var(--state-hover),
+		transparent
+	);
 	color: var(--md-sys-color-on-surface);
 }
 starlight-tabs .tab > [role='tab']:focus-visible {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-focus), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-surface) var(--state-focus),
+		transparent
+	);
 	color: var(--md-sys-color-on-surface);
 }
 starlight-tabs .tab > [role='tab']:active {
-	background-color: color-mix(in srgb, var(--md-sys-color-primary) var(--state-pressed), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-primary) var(--state-pressed),
+		transparent
+	);
 	color: var(--md-sys-color-on-surface);
 }
 starlight-tabs .tab > [role='tab'][aria-selected='true'] {
@@ -234,7 +270,11 @@ starlight-tabs .tab > [role='tab'][aria-selected='true']:hover {
 	background-color: color-mix(in srgb, var(--md-sys-color-primary) var(--state-hover), transparent);
 }
 starlight-tabs .tab > [role='tab'][aria-selected='true']:is(:focus-visible, :active) {
-	background-color: color-mix(in srgb, var(--md-sys-color-primary) var(--state-pressed), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-primary) var(--state-pressed),
+		transparent
+	);
 }
 starlight-tabs .tab > [role='tab'][aria-selected='true']::after {
 	background: var(--md-sys-color-primary);
@@ -406,7 +446,11 @@ starlight-tabs .tab > [role='tab'][aria-selected='true']::after {
 	padding-inline: var(--md-sys-space200);
 }
 .sidebar-content summary:hover {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-surface) var(--state-hover),
+		transparent
+	);
 }
 .sidebar-content summary .large {
 	color: var(--md-sys-color-on-surface-variant);
@@ -425,7 +469,11 @@ site-search button[data-open-modal] {
 		var(--md-sys-motion-spring-fast-effects);
 }
 site-search button[data-open-modal]:hover {
-	background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), transparent);
+	background-color: color-mix(
+		in srgb,
+		var(--md-sys-color-on-surface) var(--state-hover),
+		transparent
+	);
 }
 @media (max-width: 49.99rem) {
 	site-search button[data-open-modal] {
@@ -452,7 +500,11 @@ site-search button[data-open-modal]:hover {
 		line-height: var(--md-sys-typescale-body-large-line-height);
 	}
 	site-search button[data-open-modal]:hover {
-		background-color: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-hover), var(--md-sys-color-surface-container-high));
+		background-color: color-mix(
+			in srgb,
+			var(--md-sys-color-on-surface) var(--state-hover),
+			var(--md-sys-color-surface-container-high)
+		);
 	}
 }
 

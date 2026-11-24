@@ -25,12 +25,12 @@ sessions that poll, or a person who carries messages between terminals.
 
 ## What the kernel gives supervise
 
-| Need                                    | What repld does                                                              |
-| --------------------------------------- | ---------------------------------------------------------------------------- |
-| Tell an idle session something          | A channel push arrives as a new message and wakes it                         |
-| Run long work without holding the turn  | The work runs as a kernel task; the turn ends, and the result is pushed back |
-| Keep state across a clear               | Tasks in flight, receipts and the roster live in the kernel, not the chat    |
-| Let seats see each other                | One kernel per project is the shared place every seat reports to             |
+| Need                                   | What repld does                                                              |
+| -------------------------------------- | ---------------------------------------------------------------------------- |
+| Tell an idle session something         | A channel push arrives as a new message and wakes it                         |
+| Run long work without holding the turn | The work runs as a kernel task; the turn ends, and the result is pushed back |
+| Keep state across a clear              | Tasks in flight, receipts and the roster live in the kernel, not the chat    |
+| Let seats see each other               | One kernel per project is the shared place every seat reports to             |
 
 In the layers of [the cairn](/concepts/cairn/), the kernel is the bus: files
 are the store, the transcript is a cache, and the kernel carries what has to
@@ -61,7 +61,8 @@ move between sessions.
 ## What it asks of you
 
 - **Nothing to install by hand.** `./install.sh` installs repld when it is
-  missing, and `supervise doctor` checks that its version is new enough.
+  missing and registers it with Claude Code, and `supervise doctor` checks
+  that its version is new enough.
 - **One consent screen.** Channel push is a research preview in Claude Code,
   so a seat starts with a development flag and Claude Code asks you to confirm
   it. `supervise claude` passes the flag for you.
@@ -69,9 +70,10 @@ move between sessions.
   in the project your seats start in.
 
 <Aside type="caution">
-	Without a connected kernel a seat still runs and `supervise status` still
-	works, but a handoff ends in `not rebound`: the fresh session could not be
-	filed under its seat, and nothing is sent to it.
+	A seat refuses to start where repld is not a registered MCP server, and says
+	so. Where it is registered but the kernel cannot be reached at a clear, the
+	handoff ends in `not rebound`: the fresh session could not be filed under its
+	seat, and nothing is sent to it.
 </Aside>
 
 ## More than supervise uses

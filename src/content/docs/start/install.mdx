@@ -6,8 +6,9 @@ description: What supervise needs, and the one script that installs it.
 import { Steps, Aside } from '@astrojs/starlight/components';
 
 <Aside>
-	supervise is invite-only for now. You need the clone URL or a zip of the
-	repository from whoever invited you.
+	supervise is invite-only for now. Its repository is private: you need an
+	invitation to it on GitHub, accepted, and an SSH key your GitHub account
+	knows.
 </Aside>
 
 ## What you need first
@@ -23,10 +24,10 @@ included.
 
 <Steps>
 
-1. Clone the repository you were given, or unpack the zip, and enter it.
+1. Clone the repository you were invited to, over SSH, and enter it.
 
    ```bash
-   git clone <the URL you were given> supervise && cd supervise
+   git clone <the SSH URL from your invitation> supervise && cd supervise
    ```
 
 2. Run the installer. It reads its own directory, so it is never piped from a
@@ -36,21 +37,25 @@ included.
    ./install.sh
    ```
 
-   It installs repld when it is missing, installs `supervise` into uv's tool
-   bin, adds the Claude Code plugin, and ends by running `supervise doctor`.
+   It installs repld when it is missing and registers it with Claude Code as
+   an MCP server, installs `supervise` into uv's tool bin, adds the Claude
+   Code plugin, and runs `supervise doctor`. At a
+   terminal it then offers, once, to store your own seat-view key.
 
 3. Read doctor's lines. Each `missing` or `degraded` line prints its own fix.
    [Doctor](/start/doctor/) explains each state.
 
-4. Check that Claude Code sees repld and the plugin in the project you will
-   work in.
+4. Check that Claude Code sees repld and the plugin.
 
    ```bash
    claude mcp list       # repld must say Connected
    claude plugin list    # supervise@supervise
    ```
 
-   If repld is not listed:
+   The installer registers repld for your user when Claude Code has no
+   server of that name, and leaves an existing one alone. A seat refuses to
+   start where repld is not registered. To register it for one project
+   only:
 
    ```bash
    claude mcp add --scope local repld -- repld bridge

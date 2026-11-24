@@ -7,27 +7,30 @@ Every verb answers `supervise <verb> --help`.
 
 ## Look
 
-| Command            | Does                                                    |
-| ------------------ | ------------------------------------------------------- |
-| `supervise status` | the seats, the masters and the log's last lines         |
-| `supervise feed`   | the event log, one event per line; `--follow` to stay   |
-| `supervise doctor` | what the install lacks, with each fix                   |
+| Command            | Does                                                  |
+| ------------------ | ----------------------------------------------------- |
+| `supervise status` | the seats, the masters and the log's last lines       |
+| `supervise feed`   | the event log, one event per line; `--follow` to stay |
+| `supervise doctor` | what the install lacks, with each fix                 |
 
 ## Seats
 
-| Command                                   | Does                                              |
-| ----------------------------------------- | ------------------------------------------------- |
-| `supervise claude [--seat NAME] [--master]` | host `claude` as a seat                         |
-| `supervise arm --seat NAME`               | let a seat clear and hand off by itself           |
-| `supervise set --seat NAME`               | change an armed seat's deadline and settings      |
-| `supervise disarm --seat NAME`            | stop that                                         |
-| `supervise inject --seat NAME TEXT`       | type into a live seat's input box                 |
-| `supervise clear --seat NAME`             | end a seat's conversation with a handoff          |
+| Command                                     | Does                                                                               |
+| ------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `supervise claude [--seat NAME] [--master]` | host `claude` as a seat                                                            |
+| `supervise arm --seat NAME`                 | let a seat clear and hand off by itself                                            |
+| `supervise set --seat NAME`                 | change an armed seat's deadline and settings                                       |
+| `supervise disarm --seat NAME`              | stop that                                                                          |
+| `supervise inject --seat NAME TEXT`         | type into a live seat's input box                                                  |
+| `supervise clear --seat NAME`               | end a seat's conversation with a handoff                                           |
+| `supervise up N [N ...]`                    | columns of worker seats in this tmux pane, one count per column; `--arm` arms each |
+| `supervise down [SEAT ...]`                 | hand off and exit a directory's worker seats; a busy one is named and left up      |
+| `supervise prefix [--capture]`              | the key that opens the seat view; `--capture` stores a chord you press             |
 
 ## Projects
 
-| Command                            | Does                                     |
-| ---------------------------------- | ---------------------------------------- |
-| `supervise init [PATH]`            | scaffold a cairn                         |
-| `supervise project init NAME PATH` | add a project to it                      |
+| Command                            | Does                                                         |
+| ---------------------------------- | ------------------------------------------------------------ |
+| `supervise init [PATH]`            | scaffold a cairn                                             |
+| `supervise project init NAME PATH` | add a project to it                                          |
 | `/supervise init [path]`           | the same from inside a seat, with Claude reading the project |

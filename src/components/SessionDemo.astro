@@ -8,9 +8,18 @@ const workers = ['w1', 'w2', 'w3', 'w4'];
 const chapters = [
 	['Start a master', 'One seat gets the master role. It is an ordinary Claude Code session.'],
 	['Open a matrix', 'One command splits the terminal into four armed seats.'],
-	['Route the work', "Say what you want. The master hands each task to a free seat, and the seat loads that project's routing skill."],
-	['Reports come back', 'A finished branch arrives in the master as a push. It checks the receipt and lands it.'],
-	['Every seat clears', 'A full context means a recap, a clear and a fresh session that continues. The master does it too.'],
+	[
+		'Route the work',
+		"Say what you want. The master hands each task to a free seat, and the seat loads that project's routing skill.",
+	],
+	[
+		'Reports come back',
+		'A finished branch arrives in the master as a push. With lands switched on, it checks the receipt and lands it.',
+	],
+	[
+		'Every seat clears',
+		'A full context means a recap, a clear and a fresh session that continues. The master does it too.',
+	],
 ];
 
 // Claude Code's start-up figure, from a fresh session's screen: quadrant-block characters, with the cells
@@ -19,15 +28,22 @@ const FIGURE = [' ▐▛███▛█', '▝▜██████▀', ' ▝�
 const EYES = [[2, 3, 4, 5, 6, 7], [2, 3, 4, 5, 6], []];
 // Which quadrants a character fills: upper left, upper right, lower left, lower right.
 const QUADS: Record<string, number[]> = {
-	'█': [1, 1, 1, 1], '▀': [1, 1, 0, 0], '▐': [0, 1, 0, 1], '▛': [1, 1, 1, 0], '▜': [1, 1, 0, 1], '▝': [0, 1, 0, 0],
+	'█': [1, 1, 1, 1],
+	'▀': [1, 1, 0, 0],
+	'▐': [0, 1, 0, 1],
+	'▛': [1, 1, 1, 0],
+	'▜': [1, 1, 0, 1],
+	'▝': [0, 1, 0, 0],
 };
 // A terminal cell is twice as tall as wide, so a quadrant is 1 by 2 in a grid of 2 columns per cell.
 const figure = FIGURE.flatMap((row, y) =>
 	[...row].flatMap((ch, x) =>
 		(QUADS[ch] ?? [0, 0, 0, 0]).flatMap((on, q) =>
-			on || EYES[y].includes(x) ? [{ x: x * 2 + (q % 2), y: y * 4 + (q > 1 ? 2 : 0), eye: !on }] : [],
-		),
-	),
+			on || EYES[y].includes(x)
+				? [{ x: x * 2 + (q % 2), y: y * 4 + (q > 1 ? 2 : 0), eye: !on }]
+				: []
+		)
+	)
 );
 const still: Record<string, [string, string][]> = {
 	master: [
@@ -36,9 +52,18 @@ const still: Record<string, [string, string][]> = {
 		['chan', '← repld: [roster.tell from w1] COMMITTED atlas agent-w1-auth'],
 		['', '● Landed agent-w1-auth.'],
 	],
-	w1: [['user', 'continue'], ['', '● Picking up from the recap: token rotation.']],
-	w2: [['user', '[inject from master] /billing add CSV export'], ['tool', '● Skill(billing)']],
-	w3: [['user', '[inject from master] /atlas find the empty-search bug'], ['tool', '● Skill(atlas)']],
+	w1: [
+		['user', 'continue'],
+		['', '● Picking up from the recap: token rotation.'],
+	],
+	w2: [
+		['user', '[inject from master] /billing add CSV export'],
+		['tool', '● Skill(billing)'],
+	],
+	w3: [
+		['user', '[inject from master] /atlas find the empty-search bug'],
+		['tool', '● Skill(atlas)'],
+	],
 	w4: [['dim', 'armed']],
 };
 ---
@@ -46,43 +71,52 @@ const still: Record<string, [string, string][]> = {
 <template id="cc-banner">
 	<div class="banner">
 		<svg viewBox="0 0 18 12" aria-hidden="true">
-			{figure.map((c) => <rect x={c.x} y={c.y} width="1.04" height="2.04" class={c.eye ? 'eye' : ''} />)}
+			{figure.map((c) => (
+				<rect x={c.x} y={c.y} width="1.04" height="2.04" class={c.eye ? 'eye' : ''} />
+			))}
 		</svg>
 		<div>
-			<p><b>Claude Code</b> <span>v2.1.330</span></p>
-			<p><span>Opus 5.5 · Claude Max</span></p>
-			<p><span>~/cairn</span></p>
+			<p>
+				<b>Claude Code</b> <span>v2.1.330</span>
+			</p>
+			<p>
+				<span>Opus 5.5 · Claude Max</span>
+			</p>
+			<p>
+				<span>~/cairn</span>
+			</p>
 		</div>
 	</div>
 </template>
 
-<figure class="term" aria-label="A terminal. A master seat starts with supervise claude. Beside it, supervise up 2 2 --arm opens four armed seats. The master hands three tasks to them, each seat loads its project's routing skill, reports arrive as pushes, a branch lands, and each seat in turn writes a recap, clears and continues.">
+<figure
+	class="term"
+	aria-label="A terminal. A master seat starts with supervise claude. Beside it, supervise up 2 2 --arm opens four armed seats. The master hands three tasks to them, each seat loads its project's routing skill, reports arrive as pushes, a branch lands, and each seat in turn writes a recap, clears and continues."
+>
 	<div class="win" data-stage="grid" aria-hidden="true">
 		<div class="panes">
-			{
-				['master', 'right', ...workers].map((name) => (
-					<div class:list={['pane', name === 'right' ? 'shell' : 'claude']} data-pane={name}>
-						<div class="scroll">
-							{(still[name] ?? []).map(([cls, text]) => (
-								<p class={cls}>{text}</p>
-							))}
+			{['master', 'right', ...workers].map((name) => (
+				<div class:list={['pane', name === 'right' ? 'shell' : 'claude']} data-pane={name}>
+					<div class="scroll">
+						{(still[name] ?? []).map(([cls, text]) => (
+							<p class={cls}>{text}</p>
+						))}
+					</div>
+					<div class="box">
+						<div class="rule">
+							<span>{name}</span>
 						</div>
-						<div class="box">
-							<div class="rule">
-								<span>{name}</span>
-							</div>
-							<div class="in">
-								❯ <span class="typed" />
-								<i class="caret" />
-							</div>
-							<div class="rule" />
-							<div class="stat">
-								ctx <b>12</b>% · ⏵⏵ auto mode on (shift+tab to cycle)
-							</div>
+						<div class="in">
+							❯ <span class="typed" />
+							<i class="caret" />
+						</div>
+						<div class="rule" />
+						<div class="stat">
+							ctx <b>12</b>% · ⏵⏵ auto mode on (shift+tab to cycle)
 						</div>
 					</div>
-				))
-			}
+				</div>
+			))}
 		</div>
 		<div class="tmux">
 			<span>[cairn]</span> 0:supervise*
@@ -90,35 +124,59 @@ const still: Record<string, [string, string][]> = {
 	</div>
 	<div class="controls">
 		<div class="segments" role="tablist" aria-label="Parts of the demo">
-			{
-				chapters.map(([title], i) => (
-					<button role="tab" aria-selected="false" data-chapter={i}>
-						<span class="bar">
-							<i />
-						</span>
-						<span class="label">
-							<b>{i + 1}</b> {title}
-						</span>
-					</button>
-				))
-			}
+			{chapters.map(([title], i) => (
+				<button
+					role="tab"
+					id={`demo-tab-${i}`}
+					aria-controls={`demo-part-${i}`}
+					aria-selected="false"
+					tabindex={i === 0 ? 0 : -1}
+					data-chapter={i}
+				>
+					<span class="bar">
+						<i />
+					</span>
+					<span class="label">
+						<b>{i + 1}</b> {title}
+					</span>
+				</button>
+			))}
 		</div>
 		<div class="transport">
 			<button class="icon" data-act="prev" aria-label="Previous part">
-				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" /></svg>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
+				</svg>
 			</button>
 			<button class="icon filled" data-act="toggle" aria-label="Pause">
-				<svg class="pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19h4V5H6zm8-14v14h4V5z" /></svg>
-				<svg class="play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+				<svg class="pause" viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M6 19h4V5H6zm8-14v14h4V5z" />
+				</svg>
+				<svg class="play" viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M8 5v14l11-7z" />
+				</svg>
 			</button>
 			<button class="icon" data-act="next" aria-label="Next part">
-				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 18 8.5-6L6 6zM16 6v12h2V6z" /></svg>
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="m6 18 8.5-6L6 6zM16 6v12h2V6z" />
+				</svg>
 			</button>
 			<span class="glyph">
 				<CairnMark />
 			</span>
 			<div class="captions" aria-live="polite">
-				{chapters.map(([, text], i) => <p class="caption" data-chapter={i} hidden={i !== chapters.length - 1}>{text}</p>)}
+				{chapters.map(([, text], i) => (
+					<p
+						class="caption"
+						role="tabpanel"
+						id={`demo-part-${i}`}
+						aria-labelledby={`demo-tab-${i}`}
+						data-chapter={i}
+						hidden={i !== chapters.length - 1}
+					>
+						{text}
+					</p>
+				))}
 			</div>
 		</div>
 	</div>
@@ -141,7 +199,16 @@ const still: Record<string, [string, string][]> = {
 		| ['all', Op[]]
 		| ['lanes', Op[][]];
 
-	const work = (seat: string, project: string, task: string, file: string, test: string, pass: string, verb: string, past: string): Op[] => [
+	const work = (
+		seat: string,
+		project: string,
+		task: string,
+		file: string,
+		test: string,
+		pass: string,
+		verb: string,
+		past: string
+	): Op[] => [
 		['out', seat, `[inject from master] /${project} ${task}`, 'user'],
 		['spin', seat, verb, past],
 		['out', seat, `● Skill(${project})`, 'tool'],
@@ -181,7 +248,10 @@ const still: Record<string, [string, string][]> = {
 		['sh', 'right', small ? 'supervise up 2 --arm' : 'supervise up 2 2 --arm'],
 		['stage', 'grid'],
 		['all', (small ? ['w1', 'w2'] : ['w1', 'w2', 'w3', 'w4']).map((s): Op => ['boot', s])],
-		['all', (small ? ['w1', 'w2'] : ['w1', 'w2', 'w3', 'w4']).map((s): Op => ['out', s, 'armed', 'dim'])],
+		[
+			'all',
+			(small ? ['w1', 'w2'] : ['w1', 'w2', 'w3', 'w4']).map((s): Op => ['out', s, 'armed', 'dim']),
+		],
 		['wait', 600],
 		['chapter', 2],
 		[
@@ -193,42 +263,124 @@ const still: Record<string, [string, string][]> = {
 		],
 		['send', 'master'],
 		['spin', 'master', 'Baking', 'Baked'],
-		['out', 'master', "● Bash(supervise inject --seat w1 '/atlas fix the session refresh')", 'tool'],
+		[
+			'out',
+			'master',
+			"● Bash(supervise inject --submit --seat w1 '/atlas fix the session refresh')",
+			'tool',
+		],
 		['out', 'master', '  ⎿  w1: injected', 'dim'],
-		['out', 'master', "● Bash(supervise inject --seat w2 '/billing add CSV export')", 'tool'],
+		[
+			'out',
+			'master',
+			"● Bash(supervise inject --submit --seat w2 '/billing add CSV export')",
+			'tool',
+		],
 		['out', 'master', '  ⎿  w2: injected', 'dim'],
-		['out', 'master', small ? '● Routed: w1 /atlas, w2 /billing.' : '● Routed: w1 /atlas, w2 /billing, w3 /atlas. w4 stays free.'],
+		[
+			'out',
+			'master',
+			small
+				? '● Routed: w1 /atlas, w2 /billing.'
+				: '● Routed: w1 /atlas, w2 /billing, w3 /atlas. w4 stays free.',
+		],
 		['done', 'master'],
 		['ctx', 'master', 38],
 		[
 			'lanes',
 			[
-				work('w1', 'atlas', 'fix the session refresh', 'src/auth/session.ts', 'auth', '12', 'Churning', 'Churned'),
-				[['wait', 500], ...work('w2', 'billing', 'add CSV export', 'src/export/csv.ts', 'export', '8', 'Cogitating', 'Cogitated')],
-				small ? [] : [['wait', 900], ...work('w3', 'atlas', 'find the empty-search bug', 'src/search/query.ts', 'search', '21', 'Crunching', 'Crunched')],
+				work(
+					'w1',
+					'atlas',
+					'fix the session refresh',
+					'src/auth/session.ts',
+					'auth',
+					'12',
+					'Churning',
+					'Churned'
+				),
+				[
+					['wait', 500],
+					...work(
+						'w2',
+						'billing',
+						'add CSV export',
+						'src/export/csv.ts',
+						'export',
+						'8',
+						'Cogitating',
+						'Cogitated'
+					),
+				],
+				small
+					? []
+					: [
+							['wait', 900],
+							...work(
+								'w3',
+								'atlas',
+								'find the empty-search bug',
+								'src/search/query.ts',
+								'search',
+								'21',
+								'Crunching',
+								'Crunched'
+							),
+						],
 			],
 		],
 		['chapter', 3],
 		['out', 'w1', '● Bash(supervise committed --branch agent-w1-auth)', 'tool'],
-		['out', 'master', '← repld: [roster.tell from w1] COMMITTED atlas agent-w1-auth a1b2c3d', 'chan'],
+		[
+			'out',
+			'master',
+			'← repld: [roster.tell from w1] COMMITTED atlas agent-w1-auth a1b2c3d',
+			'chan',
+		],
 		['out', 'master', '● Receipt is green. Landing agent-w1-auth.'],
 		['ctx', 'master', 61],
-		['out', 'master', '← repld: [roster.tell from kernel] [auto_land agent-w1-auth] landed', 'chan'],
-		['out', 'master', small ? '● Landed a1b2c3d. w2 is still working.' : '● Landed a1b2c3d. w2 and w3 are still working.'],
+		[
+			'out',
+			'master',
+			'← repld: [roster.tell from kernel] [auto_land agent-w1-auth] landed',
+			'chan',
+		],
+		[
+			'out',
+			'master',
+			small
+				? '● Landed a1b2c3d. w2 is still working.'
+				: '● Landed a1b2c3d. w2 and w3 are still working.',
+		],
 		['chapter', 4],
 		...handoff('w1', 86, 'token rotation', 'Picking up from the recap: token rotation.'),
 		[
 			'lanes',
 			[
 				handoff('w2', 88, 'answer the review', 'Reading the review notes from the recap.'),
-				small ? [] : [['wait', 800], ['out', 'w3', '● Bash(supervise committed --branch agent-w3-search)', 'tool']],
+				small
+					? []
+					: [
+							['wait', 800],
+							['out', 'w3', '● Bash(supervise committed --branch agent-w3-search)', 'tool'],
+						],
 			],
 		],
 		...(small
 			? handoff('master', 87, 'route the next task', 'Reading the recap: w2 has the review.')
 			: ([
-					['out', 'master', '← repld: [roster.tell from w3] COMMITTED atlas agent-w3-search 9f8e7d6', 'chan'],
-					...handoff('master', 87, 'land w3, route w4', 'Reading the recap: landing agent-w3-search.'),
+					[
+						'out',
+						'master',
+						'← repld: [roster.tell from w3] COMMITTED atlas agent-w3-search 9f8e7d6',
+						'chan',
+					],
+					...handoff(
+						'master',
+						87,
+						'land w3, route w4',
+						'Reading the recap: landing agent-w3-search.'
+					),
 				] as Op[])),
 		['wait', 4200],
 	];
@@ -239,8 +391,8 @@ const still: Record<string, [string, string][]> = {
 
 	const term = document.querySelector<HTMLElement>('.term .win');
 	if (term && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-		// 40rem is the container width at which the stylesheet stacks the panes.
-		const SCRIPT = script(term.clientWidth < 640);
+		// 52rem is the container width at which the stylesheet stacks the panes.
+		const SCRIPT = script(term.clientWidth < 832);
 		// While `fast`, nothing waits: a jump to a chapter replays what came before it in one frame.
 		let fast = false;
 		// `auto` plays every chapter and loops; off, the demo stops at the end of the chapter the reader chose.
@@ -252,7 +404,8 @@ const still: Record<string, [string, string][]> = {
 			const mine = run;
 			await new Promise((r) => setTimeout(r, ms));
 			// A retired run must not stay parked here, so the hold ends when `run` moves on.
-			while ((paused || hidden) && !fast && run === mine) await new Promise((r) => setTimeout(r, 120));
+			while ((paused || hidden) && !fast && run === mine)
+				await new Promise((r) => setTimeout(r, 120));
 		};
 		const figure = term.closest<HTMLElement>('.term')!;
 		const toggle = figure.querySelector<HTMLButtonElement>('[data-act="toggle"]')!;
@@ -271,9 +424,13 @@ const still: Record<string, [string, string][]> = {
 
 		// Leaf ops per chapter, so a chapter's bar fills by the share of its ops that have run.
 		const leaves = (op: Op): number =>
-			op[0] === 'all' ? op[1].reduce((n, o) => n + leaves(o), 0)
-			: op[0] === 'lanes' ? op[1].flat().reduce((n, o) => n + leaves(o), 0)
-			: op[0] === 'chapter' ? 0 : 1;
+			op[0] === 'all'
+				? op[1].reduce((n, o) => n + leaves(o), 0)
+				: op[0] === 'lanes'
+					? op[1].flat().reduce((n, o) => n + leaves(o), 0)
+					: op[0] === 'chapter'
+						? 0
+						: 1;
 		const totals: number[] = [];
 		for (const op of SCRIPT) {
 			if (op[0] === 'chapter') totals[op[1]] = 0;
@@ -282,11 +439,19 @@ const still: Record<string, [string, string][]> = {
 		let cur = 0;
 		let ticks = 0;
 		const progress = () =>
-			tabs.forEach((t, i) => t.style.setProperty('--p', String(i < cur ? 1 : i > cur ? 0 : Math.min(1, ticks / totals[cur]))));
+			tabs.forEach((t, i) =>
+				t.style.setProperty(
+					'--p',
+					String(i < cur ? 1 : i > cur ? 0 : Math.min(1, ticks / totals[cur]))
+				)
+			);
 		const mark = (n: number) => {
 			cur = n;
 			ticks = 0;
-			tabs.forEach((t, i) => t.setAttribute('aria-selected', String(i === n)));
+			tabs.forEach((t, i) => {
+				t.setAttribute('aria-selected', String(i === n));
+				t.tabIndex = i === n ? 0 : -1;
+			});
 			captions.forEach((c, i) => (c.hidden = i !== n));
 			progress();
 		};
@@ -298,11 +463,17 @@ const still: Record<string, [string, string][]> = {
 			const el = pane(name);
 			el.classList.add(cls);
 			clearTimeout(lit.get(el));
-			lit.set(el, window.setTimeout(() => el.classList.remove(cls), ms));
+			lit.set(
+				el,
+				window.setTimeout(() => el.classList.remove(cls), ms)
+			);
 		};
 
 		const banner = document.querySelector<HTMLTemplateElement>('#cc-banner')!;
-		const spinners = new Map<string, { el: HTMLElement; timer: number; past: string; t0: number }>();
+		const spinners = new Map<
+			string,
+			{ el: HTMLElement; timer: number; past: string; t0: number }
+		>();
 		const line = (name: string, text: string, cls = '') => {
 			const p = document.createElement('p');
 			p.textContent = text;
@@ -405,10 +576,12 @@ const still: Record<string, [string, string][]> = {
 					const draw = () => {
 						// Forward then back over FRAMES, never repeating an end frame.
 						const k = n++ % (FRAMES.length * 2 - 2);
-						el.querySelector('i')!.textContent = FRAMES[k < FRAMES.length ? k : FRAMES.length * 2 - 2 - k];
+						el.querySelector('i')!.textContent =
+							FRAMES[k < FRAMES.length ? k : FRAMES.length * 2 - 2 - k];
 						// The demo runs about four times faster than a real turn, so its clock does too.
 						const s = Math.round((performance.now() - t0) / 250);
-						el.querySelector('span')!.textContent = `(${s}s · ↓ ${(s * 0.21 + 0.3).toFixed(1)}k tokens · esc to interrupt)`;
+						el.querySelector('span')!.textContent =
+							`(${s}s · ↓ ${(s * 0.21 + 0.3).toFixed(1)}k tokens · esc to interrupt)`;
 					};
 					draw();
 					spinners.set(op[1], { el, timer: window.setInterval(draw, FRAME_MS), past: op[3], t0 });
@@ -435,7 +608,7 @@ const still: Record<string, [string, string][]> = {
 					await Promise.all(
 						op[1].map(async (lane) => {
 							for (const o of lane) await exec(o, id);
-						}),
+						})
 					);
 					return;
 			}
@@ -473,6 +646,21 @@ const still: Record<string, [string, string][]> = {
 			play(run, Math.max(0, Math.min(tabs.length - 1, n)));
 		};
 		tabs.forEach((t, i) => t.addEventListener('click', () => jump(i)));
+		figure.querySelector('[role="tablist"]')!.addEventListener('keydown', (e) => {
+			const key = (e as KeyboardEvent).key;
+			const at = tabs.indexOf(document.activeElement as HTMLButtonElement);
+			const last = tabs.length - 1;
+			const to = {
+				ArrowRight: at === last ? 0 : at + 1,
+				ArrowLeft: at <= 0 ? last : at - 1,
+				Home: 0,
+				End: last,
+			}[key];
+			if (at < 0 || to === undefined) return;
+			e.preventDefault();
+			tabs[to].focus();
+			jump(to);
+		});
 		figure.querySelector('[data-act="prev"]')!.addEventListener('click', () => jump(cur - 1));
 		figure.querySelector('[data-act="next"]')!.addEventListener('click', () => jump(cur + 1));
 		toggle.addEventListener('click', () => {
@@ -495,7 +683,7 @@ const still: Record<string, [string, string][]> = {
 				run += 1;
 				play(run);
 			},
-			{ threshold: 0.35 },
+			{ threshold: 0.35 }
 		).observe(term);
 	}
 </script>
@@ -513,7 +701,7 @@ const still: Record<string, [string, string][]> = {
 		box-shadow: var(--elevation-3);
 		display: grid;
 		font-family: var(--__sl-font-mono);
-		font-size: clamp(6.5px, 1.08cqi, 12.5px);
+		font-size: clamp(9px, 1.08cqi, 12.5px);
 		gap: 1px;
 		grid-template-rows: 1fr auto;
 		/* Never taller than the window, so the terminal and its controls fit on screen together. */
@@ -748,13 +936,15 @@ const still: Record<string, [string, string][]> = {
 	/* tmux's active-pane border, and the pulse of a seat whose push just reached the master. */
 	.pane {
 		box-shadow: inset 0 0 0 0 transparent;
-		transition: box-shadow var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+		transition: box-shadow var(--md-sys-motion-duration-medium1)
+			var(--md-sys-motion-easing-standard);
 	}
 	.pane.active {
 		box-shadow: inset 0 0 0 1px var(--md-sys-color-primary);
 	}
 	.pane.sent {
-		animation: sent var(--md-sys-motion-duration-extra-long4) var(--md-sys-motion-easing-emphasized-decelerate);
+		animation: sent var(--md-sys-motion-duration-extra-long4)
+			var(--md-sys-motion-easing-emphasized-decelerate);
 	}
 	@keyframes sent {
 		0% {
@@ -762,7 +952,8 @@ const still: Record<string, [string, string][]> = {
 		}
 	}
 	.scroll :global(.chan) {
-		animation: arrive var(--md-sys-motion-duration-long4) var(--md-sys-motion-easing-emphasized-decelerate);
+		animation: arrive var(--md-sys-motion-duration-long4)
+			var(--md-sys-motion-easing-emphasized-decelerate);
 	}
 	@keyframes arrive {
 		0% {
@@ -803,7 +994,11 @@ const still: Record<string, [string, string][]> = {
 		background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-focus), transparent);
 	}
 	.segments button:active {
-		background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-pressed), transparent);
+		background: color-mix(
+			in srgb,
+			var(--md-sys-color-on-surface) var(--state-pressed),
+			transparent
+		);
 	}
 	/* md.comp.progress-indicator.linear: 4dp tall, a 4dp space between the active indicator and the track, and a
 	   4dp stop at the track's end, which the spec requires when the track has under 3:1 against its surface. */
@@ -818,7 +1013,8 @@ const still: Record<string, [string, string][]> = {
 		flex: 0 0 calc(var(--p, 0) * 100%);
 		/* No space before the track while nothing has played. */
 		margin-inline-end: min(4px, calc(var(--p, 0) * 1000px));
-		transition: flex-basis var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-standard);
+		transition: flex-basis var(--md-sys-motion-duration-medium4)
+			var(--md-sys-motion-easing-standard);
 	}
 	.bar::before {
 		background: var(--md-sys-color-secondary-container);
@@ -948,9 +1144,9 @@ const still: Record<string, [string, string][]> = {
 	}
 
 	/* Narrow: what `supervise up 2` gives a small terminal, stacked: the master, then two seats, full width. */
-	@container (max-width: 40rem) {
+	@container (max-width: 52rem) {
 		.win {
-			font-size: clamp(8.5px, 3cqi, 11.5px);
+			font-size: clamp(9px, 3cqi, 11.5px);
 			height: min(58em, calc(100svh - 17rem));
 		}
 		.panes {

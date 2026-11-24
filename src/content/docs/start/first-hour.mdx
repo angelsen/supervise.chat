@@ -18,6 +18,9 @@ supervise knows about, and one handoff you watched happen.
    supervise claude --seat master --master
    ```
 
+   It may print one line saying the master starts without termtap2. That is
+   fine: termtap2 is an optional extra for driving tmux panes.
+
 2. In a second terminal, start a seat to work in.
 
    ```bash
@@ -56,8 +59,8 @@ that checks it. It reports doctor's lines before it writes anything.
 
 ## Arm the working seat
 
-Arming is always a human's call. It lets the seat clear and hand off by
-itself.
+Arming lets the seat clear and hand off by itself. It is a human's call, or
+the master's for the seats that report to it; a seat never arms itself.
 
 ```bash
 supervise arm --seat work

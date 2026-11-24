@@ -14,23 +14,26 @@ const { title = data.title, tagline, actions = [] } = data.hero || {};
 	<div class="copy">
 		{/* Starlight's skip link and table of contents target `_top`. */}
 		<h1 id="_top" data-page-title set:html={title} />
-		{
-			tagline && (
-				<p class="tagline">
-					{tagline.split(' ').map((word, i) => (
-						<span style={`--i:${i}`}>{word} </span>
-					))}
-				</p>
-			)
-		}
+		{tagline && (
+			<p class="tagline">
+				{tagline.split(' ').map((word, i) => (
+					<span style={`--i:${i}`}>{word} </span>
+				))}
+			</p>
+		)}
 		<div class="actions">
-			{
-				actions.map(({ link, text, variant }, i) => (
-					<a class:list={['m3-button', 'medium', i === 0 ? 'filled' : variant === 'minimal' ? 'text' : 'tonal']} href={link}>
-						{text}
-					</a>
-				))
-			}
+			{actions.map(({ link, text, variant }, i) => (
+				<a
+					class:list={[
+						'm3-button',
+						'medium',
+						i === 0 ? 'filled' : variant === 'minimal' ? 'text' : 'tonal',
+					]}
+					href={link}
+				>
+					{text}
+				</a>
+			))}
 		</div>
 	</div>
 	<div class="demo">
@@ -69,7 +72,8 @@ const { title = data.title, tagline, actions = [] } = data.hero || {};
 	}
 	/* The tagline arrives the way a streamed answer does: word by word, each fading up. */
 	.tagline span {
-		animation: stream var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate) both;
+		animation: stream var(--md-sys-motion-duration-medium4)
+			var(--md-sys-motion-easing-emphasized-decelerate) both;
 		animation-delay: calc(350ms + var(--i) * 70ms);
 		display: inline-block;
 		white-space: pre;
@@ -123,7 +127,7 @@ const { title = data.title, tagline, actions = [] } = data.hero || {};
 		}
 	}
 
-	/* Decorative container-colour shapes behind the hero; the corners breathe between two scale steps. */
+	/* Decorative container-colour shapes behind the hero. */
 	.shapes {
 		inset: -4rem -1rem;
 		overflow: hidden;

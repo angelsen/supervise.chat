@@ -1,0 +1,7 @@
+dist
+.astro
+node_modules
+pnpm-lock.yaml
+# Generated: `pnpm tokens` and the seat-view fixture script write these.
+src/styles/m3.css
+src/generated

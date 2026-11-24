@@ -5,27 +5,29 @@ import view from '../generated/seatview.json';
 
 <div class="seatview not-content">
 	<div class="steps" role="tablist" aria-label="Steps of a handoff">
-		{
-			view.frames.map((f, i) => (
-				<button
-					role="tab"
-					id={`seatview-tab-${i}`}
-					aria-controls="seatview-panel"
-					aria-selected={i === 0 ? 'true' : 'false'}
-					tabindex={i === 0 ? 0 : -1}
-					data-frame={i}
-				>
-					{f.label}
-				</button>
-			))
-		}
+		{view.frames.map((f, i) => (
+			<button
+				role="tab"
+				id={`seatview-tab-${i}`}
+				aria-controls="seatview-panel"
+				aria-selected={i === 0 ? 'true' : 'false'}
+				tabindex={i === 0 ? 0 : -1}
+				data-frame={i}
+			>
+				{f.label}
+			</button>
+		))}
 	</div>
-	<div class="screen" id="seatview-panel" role="tabpanel" aria-labelledby="seatview-tab-0" style={`--cols:${view.width}`}>
-		{
-			view.frames.map((f, i) => (
-				<pre hidden={i !== 0} data-frame={i} set:html={f.lines.join('\n')} />
-			))
-		}
+	<div
+		class="screen"
+		id="seatview-panel"
+		role="tabpanel"
+		aria-labelledby="seatview-tab-0"
+		style={`--cols:${view.width}`}
+	>
+		{view.frames.map((f, i) => (
+			<pre hidden={i !== 0} data-frame={i} set:html={f.lines.join('\n')} />
+		))}
 	</div>
 </div>
 
@@ -52,11 +54,16 @@ import view from '../generated/seatview.json';
 			t.addEventListener('click', () => {
 				clearInterval(timer);
 				show(i);
-			}),
+			})
 		);
 		// One tab stop for the list; the arrow keys move within it, and any key or focus ends the rotation.
 		root.querySelector('[role="tablist"]')!.addEventListener('keydown', (e) => {
-			const step = (e as KeyboardEvent).key === 'ArrowRight' ? 1 : (e as KeyboardEvent).key === 'ArrowLeft' ? -1 : 0;
+			const step =
+				(e as KeyboardEvent).key === 'ArrowRight'
+					? 1
+					: (e as KeyboardEvent).key === 'ArrowLeft'
+						? -1
+						: 0;
 			if (!step) return;
 			clearInterval(timer);
 			show((at + step + tabs.length) % tabs.length);
@@ -103,7 +110,11 @@ import view from '../generated/seatview.json';
 		color: var(--md-sys-color-on-surface);
 	}
 	.steps button:is(:focus-visible, :active) {
-		background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--state-pressed), transparent);
+		background: color-mix(
+			in srgb,
+			var(--md-sys-color-on-surface) var(--state-pressed),
+			transparent
+		);
 		color: var(--md-sys-color-on-surface);
 	}
 	.steps button[aria-selected='true'] {

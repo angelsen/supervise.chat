@@ -16,25 +16,25 @@ gets worse as it fills. So supervise treats it as a cache: useful while it
 lasts, safe to throw away. `continue` after a clear works because a cursor
 needs almost nothing to resume: a pointer to where it was, and the store.
 
-| Layer                    | Holds                                         | Survives                    |
-| ------------------------ | --------------------------------------------- | --------------------------- |
-| The transcript           | one round's working memory                    | nothing; cleared by design  |
-| The kernel (repld)       | tasks in flight, receipts, who is working     | a clear                     |
-| The cairn                | routing skills, playbooks, recaps, notes      | everything                  |
-| The project's repository | the code, its `TODO`, its docs, git           | everything                  |
-| Hooks                    | the rules a session never has to remember     | independent of any session  |
+| Layer                    | Holds                                     | Survives                   |
+| ------------------------ | ----------------------------------------- | -------------------------- |
+| The transcript           | one round's working memory                | nothing; cleared by design |
+| The kernel (repld)       | tasks in flight, receipts, who is working | a clear                    |
+| The cairn                | routing skills, playbooks, recaps, notes  | everything                 |
+| The project's repository | the code, its `TODO`, its docs, git       | everything                 |
+| Hooks                    | the rules a session never has to remember | independent of any session |
 
 That only works if nothing important lives in the conversation alone. So every
 kind of state has a place, and a session writes it there before it ends:
 
-| What                                   | Where it lives                    | Read by                         |
-| -------------------------------------- | --------------------------------- | ------------------------------- |
-| Where this seat's work stands          | its recap, with a `next` step     | the seat's successor, at start  |
-| What a project is and how to check it  | its routing skill, in the cairn   | any seat that takes on its work |
-| What a session must know first         | the project's read-first files    | the seat, when the skill loads  |
-| What is not done yet                   | the project's `TODO`              | whoever picks the next task     |
-| What every seat did                    | the event log                     | the master, and you             |
-| Why the code changed                   | the commits                       | anyone, later                   |
+| What                                  | Where it lives                  | Read by                         |
+| ------------------------------------- | ------------------------------- | ------------------------------- |
+| Where this seat's work stands         | its recap, with a `next` step   | the seat's successor, at start  |
+| What a project is and how to check it | its routing skill, in the cairn | any seat that takes on its work |
+| What a session must know first        | the project's read-first files  | the seat, when the skill loads  |
+| What is not done yet                  | the project's `TODO`            | whoever picks the next task     |
+| What every seat did                   | the event log                   | the master, and you             |
+| Why the code changed                  | the commits                     | anyone, later                   |
 
 A clear then loses nothing. The fresh session starts small, reads the recap
 and the read-first files, and carries on.
